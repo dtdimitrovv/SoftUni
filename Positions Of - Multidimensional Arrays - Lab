@@ -1,0 +1,56 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read the rows and columns
+        int[] rowsAndColumns = Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+
+        int rows = rowsAndColumns[0];
+        int columns = rowsAndColumns[1];
+
+        // Declare a variable for the matrix
+        int[][] matrix = new int[rows][columns];
+
+        // Read the matrix
+        for (int row = 0; row < rows; row++) {
+            int[] currentRow = Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+            matrix[row] = currentRow;
+        }
+
+        // Read the number we look for
+        int searchedNumber = Integer.parseInt(scanner.nextLine());
+
+        List<Integer> positionsOfSeachedNumber = findPositionOfNumber(matrix, searchedNumber);
+
+        if (positionsOfSeachedNumber.isEmpty()) {
+            System.out.println("not found");
+        } else {
+            // Print the list
+            for (int i = 0; i < positionsOfSeachedNumber.size(); i += 2) {
+                System.out.println(positionsOfSeachedNumber.get(i) + " " + positionsOfSeachedNumber.get(i + 1));
+            }
+        }
+    }
+
+    public static List<Integer> findPositionOfNumber(int[][] matrix, int numberToLookFor) {
+        // Create a list to store each position of the number
+        List<Integer> positionsByRowsAndColumns = new ArrayList<>();
+
+        for (int row = 0; row < matrix.length; row++) {
+            // Get each array and loop over it to check
+            for (int column = 0; column < matrix[row].length; column++) {
+                if (matrix[row][column] == numberToLookFor) {
+                    positionsByRowsAndColumns.add(row);
+                    positionsByRowsAndColumns.add(column);
+                }
+            }
+        }
+
+        return positionsByRowsAndColumns;
+    }
+}
