@@ -1,0 +1,78 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read the rows and columns
+        int[] rowsAndColumns = Arrays.stream(scanner.nextLine().split(",\\s+")).mapToInt(Integer::parseInt).toArray();
+
+        int rows = rowsAndColumns[0];
+        int columns = rowsAndColumns[1];
+
+        // Declare a variable for the matrix
+        int[][] matrix = new int[rows][columns];
+
+        // Read the matrix
+        for (int row = 0; row < rows; row++) {
+            int[] currentRow = Arrays.stream(scanner.nextLine().split(",\\s+")).mapToInt(Integer::parseInt).toArray();
+            matrix[row] = currentRow;
+        }
+
+        int[][] biggestSubMatrix = biggestSubMatrix(matrix);
+        // Print the matrix
+        for (int row = 0; row < biggestSubMatrix.length; row++) {
+            for (int column = 0; column < biggestSubMatrix[row].length; column++) {
+                System.out.print(biggestSubMatrix[row][column] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println(sumOfMatrixElements(biggestSubMatrix));
+    }
+
+    public static int[][] biggestSubMatrix(int[][] inputMatrix) {
+
+        int[][] biggestSubMatrix = new int[2][2];
+
+        int biggestSum = Integer.MIN_VALUE;
+
+        for (int row = 0; row < inputMatrix.length - 1; row++) {
+
+            int currentSum = 0;
+
+            for (int column = 0; column < inputMatrix[row].length - 1; column++) {
+                currentSum += inputMatrix[row][column];
+                currentSum += inputMatrix[row][column + 1];
+                currentSum += inputMatrix[row + 1][column];
+                currentSum += inputMatrix[row + 1][column + 1];
+
+                if (currentSum > biggestSum) {
+                    biggestSum = currentSum;
+
+                    // Fill in the currently biggest submatrix
+                    biggestSubMatrix[0][0] = inputMatrix[row][column];
+                    biggestSubMatrix[0][1] = inputMatrix[row][column + 1];
+                    biggestSubMatrix[1][0] = inputMatrix[row + 1][column];
+                    biggestSubMatrix[1][1] = inputMatrix[row + 1][column + 1];
+                }
+                currentSum = 0;
+            }
+        }
+        return biggestSubMatrix;
+    }
+
+    public static int sumOfMatrixElements(int[][] matrix) {
+        int sumOfElements = 0;
+
+        for (int row = 0; row < matrix.length; row++) {
+            // Get each array and loop over it to check
+            for (int column = 0; column < matrix[row].length; column++) {
+                sumOfElements += matrix[row][column];
+            }
+        }
+        return sumOfElements;
+    }
+}
