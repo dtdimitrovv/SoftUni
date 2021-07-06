@@ -1,0 +1,69 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int n = Integer.parseInt(scanner.nextLine());
+        // Declare a variable for the matrix
+        int[][] matrix = new int[n][n];
+
+        // Read the matrix
+        for (int row = 0; row < n; row++) {
+            int[] currentRow = Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+            matrix[row] = currentRow;
+        }
+
+        int[] mainDiagonal = returnMainDiagonal(matrix);
+        printArray(mainDiagonal);
+
+        int[] secondaryDiagonal = returnSecondaryDiagonal(matrix);
+        printArray(secondaryDiagonal);
+    }
+
+    private static void printArray(int[] arr) {
+        for (int element : arr) {
+            System.out.print(element + " ");
+        }
+        System.out.println();
+    }
+
+    private static int[] returnMainDiagonal(int[][] matrix) {
+
+        int[] mainDiagonal = new int[matrix.length]; // It is a square so we can take the length of the matrix
+
+        for (int row = 0; row < matrix.length; row++) {
+
+            for (int column = 0; column < matrix[row].length; column++) {
+
+                if (row == column) {
+                    mainDiagonal[row] = matrix[row][column];
+                }
+
+            }
+        }
+
+        return mainDiagonal;
+    }
+
+    private static int[] returnSecondaryDiagonal(int[][] matrix) {
+
+        int[] secondaryDiagonal = new int[matrix.length]; // It is a square so we can take the length of the matrix
+
+        for (int row = matrix.length - 1; row >= 0; row--) {
+
+            for (int column = 0; column < matrix[row].length; column++) {
+
+                if (row + column == matrix.length - 1) {
+                    secondaryDiagonal[column] = matrix[row][column];
+                }
+
+            }
+        }
+
+        return secondaryDiagonal;
+    }
+}
