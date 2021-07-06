@@ -1,0 +1,76 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int n = Integer.parseInt(scanner.nextLine());
+        // Declare a variable for the matrix
+        int[][] matrix = new int[n][];
+
+        // Read the matrix
+        for (int row = 0; row < n; row++) {
+            int[] currentRow = readArray(scanner);
+            matrix[row] = currentRow;
+        }
+
+        int[] positionOfElement = readArray(scanner);
+
+        int xPosition = positionOfElement[0];
+        int yPosition = positionOfElement[1];
+
+        int elementWeLookFor = matrix[xPosition][yPosition];
+
+        int[][] resultMatrix = new int[n][];
+
+        for (int row = 0; row < matrix.length; row++) {
+
+            int[] currentRow = new int[matrix[row].length];
+
+            for (int column = 0; column < matrix[row].length; column++) {
+
+                if (matrix[row][column] == elementWeLookFor) {
+
+                    if (row - 1 >= 0 && matrix[row - 1][column] != elementWeLookFor) {
+                        currentRow[column] += matrix[row - 1][column];
+                    }
+
+                    if (row + 1 < n && matrix[row + 1][column] != elementWeLookFor) {
+                        currentRow[column] += matrix[row + 1][column];
+                    }
+
+                    if (column - 1 >= 0 && matrix[row][column - 1] != elementWeLookFor) {
+                        currentRow[column] += matrix[row][column - 1];
+                    }
+
+                    if (column + 1 < currentRow.length && matrix[row][column + 1] != elementWeLookFor) {
+                        currentRow[column] += matrix[row][column + 1];
+                    }
+                } else {
+                    currentRow[column] = matrix[row][column];
+                }
+            }
+            resultMatrix[row] = currentRow;
+        }
+
+        printMatrix(resultMatrix);
+
+    }
+
+    private static int[] readArray(Scanner scanner) {
+        return Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+    }
+
+    private static void printMatrix(int[][] matrix) {
+        // Print the matrix
+        for (int row = 0; row < matrix.length; row++) {
+            for (int column = 0; column < matrix[row].length; column++) {
+                System.out.print(matrix[row][column] + " ");
+            }
+            System.out.println();
+        }
+    }
+}
