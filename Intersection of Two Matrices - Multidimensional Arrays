@@ -1,0 +1,53 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int rows = Integer.parseInt(scanner.nextLine());
+        int columns = Integer.parseInt(scanner.nextLine());
+
+        // Declare a variable for the matrix
+        char[][] firstMatrix = readMatrix(rows, scanner);
+        char[][] secondMatrix = readMatrix(rows, scanner);
+
+        intersectionOfTwoMatrices(firstMatrix, secondMatrix);
+    }
+
+    public static void intersectionOfTwoMatrices(char[][] matrix1, char[][] matrix2) {
+        char[][] intersectedMatrix = new char[matrix1.length][];
+
+        for (int row = 0; row < matrix1.length; row++) {
+            char[] intersectedRow = new char[matrix1[row].length];
+
+            for (int column = 0; column < matrix1[row].length; column++) {
+                if (matrix1[row][column] != matrix2[row][column]) {
+                    intersectedRow[column] = '*';
+                } else {
+                    intersectedRow[column] = matrix1[row][column];
+                }
+            }
+            intersectedMatrix[row] = intersectedRow;
+        }
+
+        // Print the matrix
+        for (int row = 0; row < matrix1.length; row++) {
+            for (int column = 0; column < matrix1[row].length; column++) {
+                System.out.print(intersectedMatrix[row][column] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static char[][] readMatrix(int rows, Scanner scanner) {
+        char[][] matrix = new char[rows][];
+        for (int row = 0; row < rows; row++) {
+            char[] currentRow = scanner.nextLine().replaceAll("\\s+","").toCharArray();
+            matrix[row] = currentRow;
+        }
+        return matrix;
+    }
+}
