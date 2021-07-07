@@ -1,0 +1,68 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        String[] input = scanner.nextLine().split(",\\s+");
+
+        int n = Integer.parseInt(input[0]);
+        char choice = input[1].charAt(0);
+
+        int[][] matrix = new int[n][n];
+
+        if (choice == 'A') {
+            fillInMatrixMethodA(matrix);
+
+        } else {
+            fillInMatrixMethodB(matrix);
+        }
+
+        printMatrix(matrix);
+    }
+
+    private static void fillInMatrixMethodA(int[][] matrix) {
+        int number = 1;
+
+        for (int column = 0; column < matrix.length; column++) {
+
+            for (int row = 0; row < matrix[column].length; row++) {
+                matrix[row][column] = number;
+                number++;
+            }
+        }
+    }
+
+    private static void fillInMatrixMethodB(int[][] matrix) {
+        int number = 1;
+
+        for (int column = 0; column < matrix.length; column++) {
+
+            if (column % 2 == 0) {
+                for (int row = 0; row < matrix[column].length; row++) {
+                    matrix[row][column] = number;
+                    number++;
+                }
+            } else {
+                for (int row = matrix[column].length - 1; row >= 0; row--) {
+                    matrix[row][column] = number;
+                    number++;
+                }
+            }
+        }
+    }
+
+    private static void printMatrix(int[][] matrix) {
+        for (int row = 0; row < matrix.length; row++) {
+
+            for (int column = 0; column < matrix[row].length; column++) {
+
+                System.out.print(matrix[row][column] + " ");
+            }
+            System.out.println();
+        }
+    }
+}
