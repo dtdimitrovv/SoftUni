@@ -1,0 +1,165 @@
+package com.company;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static class Plant {
+        private String name;
+        private int rarity;
+        private List<Double> ratings = new ArrayList<>();
+
+        public Plant(String name, int rarity) {
+            this.name = name;
+            this.rarity = rarity;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getRarity() {
+            return rarity;
+        }
+
+        public void setRarity(int rarity) {
+            this.rarity = rarity;
+        }
+
+        public List<Double> getRatings() {
+            return ratings;
+        }
+
+        public void addNewRating(double rating) {
+            this.ratings.add(rating);
+        }
+
+        public void addNewRating(int index, double rating) {
+            this.ratings.add(index, rating);
+        }
+
+        public void removeAllRatings() {
+            int i = 0;
+            while (!this.ratings.isEmpty()) {
+                this.ratings.remove(i);
+            }
+        }
+
+        public int sortByRarityDescendingOrder(Plant currentPlant) {
+            int result = currentPlant.getRarity() - this.getRarity();
+            if (result == 0) {
+                // Sort by average rating descending
+                result = (int) (currentPlant.getRatings().get(0) - this.getRatings().get(0));
+            }
+            return result;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        List<Plant> allPlants = new ArrayList<>(); // Store all plants in one variable
+
+        int numberOfPlants = Integer.parseInt(scanner.nextLine());
+
+        // Add the plants
+        for (int i = 0; i < numberOfPlants; i++) {
+            String[] inputArray = scanner.nextLine().split("<->");
+
+            String plantName = inputArray[0];
+            int plantRarity = Integer.parseInt(inputArray[1]);
+
+            boolean plantNotPresent = true;
+
+            // Check if the plant is present
+            for (Plant plant : allPlants) {
+                if (plant.getName().equals(plantName)) {
+                    plantNotPresent = false;
+
+                    plant.setRarity(plantRarity);
+                    break; // Exit the loop as we have found the plant
+                }
+            }
+
+            if (plantNotPresent) {
+                allPlants.add(new Plant(plantName, plantRarity));
+            }
+        }
+
+        String command;
+        while (!"Exhibition".equals(command = scanner.nextLine())) {
+            String[] commandsArray = command.split(" ");
+
+            String currentPlant = commandsArray[1];
+
+            boolean validCommand = false;
+
+            // Check if the command starts with 'Rate:'
+            if (commandsArray[0].equals("Rate:")) {
+                double currentRating = Double.parseDouble(commandsArray[3]);
+
+                for (Plant plant : allPlants) {
+                    if (plant.getName().equals(currentPlant)) {
+                        plant.addNewRating(currentRating);
+                        validCommand = true;
+                        break; // Exit the loop as we don't need to iterate
+                    }
+                }
+            }
+            // Check if the command starts with 'Update:'
+            else if (commandsArray[0].equals("Update:")) {
+                int newRarity = Integer.parseInt(commandsArray[3]);
+                for (Plant plant : allPlants) {
+                    if (plant.getName().equals(currentPlant)) {
+                        plant.setRarity(newRarity);
+                        validCommand = true;
+                        break; // Exit the loop as we don't need to iterate
+                    }
+                }
+            }
+            // Check if the command starts with 'Reset:'
+            else if (commandsArray[0].equals("Reset:")) {
+
+                for (Plant plant : allPlants) {
+                    if (plant.getName().equals(currentPlant)) {
+                        plant.removeAllRatings();
+                        validCommand = true;
+                        break; // Exit the loop as we don't need to iterate
+                    }
+                }
+            }
+
+            if (!validCommand) {
+                System.out.println("error");
+            }
+        }
+
+        // Calculate the average rating
+        for (Plant plant : allPlants) {
+            // Get all ratings
+            if (plant.getRatings().isEmpty()) {
+                plant.addNewRating(0, 0); // Add the average rating at the beginning of the list of ratings
+            } else {
+                double averageOfPlantRatings = plant.getRatings().stream()
+                        .mapToDouble(Double::doubleValue)
+                        .average()
+                        .getAsDouble();
+                plant.addNewRating(0, averageOfPlantRatings); // Add the average rating at the beginning of the list of ratings
+            }
+        }
+
+        Collections.sort(allPlants, Plant::sortByRarityDescendingOrder);
+
+        System.out.println("Plants for the exhibition:");
+        for (Plant plant : allPlants) {
+            System.out.printf("- %s; Rarity: %d; Rating: %.2f\n", plant.getName(), plant.getRarity(), plant.getRatings().get(0));
+        }
+    }
+}
