@@ -1,0 +1,87 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int[][] matrix = readMatrix(scanner);
+
+        int maxSumOfElements = Integer.MIN_VALUE;
+        int[][] threeByThreeArray = new int[3][3];
+
+        for (int row = 0; row < matrix.length; row++) {
+
+            for (int column = 0; column < matrix[row].length; column++) {
+
+                int currentSumOfElements = 0;
+                // Check if we will be able to form 3x3 matrix
+                if (column + 2 < matrix[row].length && row + 2 < matrix.length) {
+                    currentSumOfElements += sumOfRow(matrix, row, column);
+                    currentSumOfElements += sumOfRow(matrix, row + 1, column);
+                    currentSumOfElements += sumOfRow(matrix, row + 2, column);
+                }
+
+                if (currentSumOfElements > maxSumOfElements) {
+                    maxSumOfElements = currentSumOfElements;
+                    threeByThreeArray[0] = returnArray(matrix, row, column);
+                    threeByThreeArray[1] = returnArray(matrix, row + 1, column);
+                    threeByThreeArray[2] = returnArray(matrix, row + 2, column);
+                }
+            }
+        }
+
+        System.out.println("Sum = " + maxSumOfElements);
+        printMatrix(threeByThreeArray);
+    }
+
+    private static int[] returnArray(int[][] matrix, int row, int column) {
+        int[] array = new int[3];
+        array[0] = matrix[row][column];
+        array[1] = matrix[row][column + 1];
+        array[2] = matrix[row][column + 2];
+        return array;
+    }
+
+    private static int sumOfRow(int[][] matrix, int row, int column) {
+        int currentSumOfElements = 0;
+        currentSumOfElements += matrix[row][column];
+        currentSumOfElements += matrix[row][column + 1];
+        currentSumOfElements += matrix[row][column + 2];
+
+        return currentSumOfElements;
+    }
+
+    private static int[] readArray(Scanner scanner) {
+        return Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+    }
+
+    private static int[][] readMatrix(Scanner scanner) {
+        int[] input = readArray(scanner);
+
+        int rows = input[0];
+        int columns = input[1];
+
+        int[][] matrix = new int[rows][columns];
+
+        // Fill in the matrix
+        for (int row = 0; row < matrix.length; row++) {
+            matrix[row] = readArray(scanner);
+        }
+        return matrix;
+    }
+
+    private static void printMatrix(int[][] matrix) {
+        for (int row = 0; row < matrix.length; row++) {
+
+            for (int column = 0; column < matrix[row].length; column++) {
+
+                System.out.print(matrix[row][column] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+}
