@@ -1,0 +1,161 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static class Piece {
+        private String pieceName;
+        private String composer;
+        private String key;
+
+        public Piece(String piece, String composer, String key) {
+            this.pieceName = piece;
+            this.composer = composer;
+            this.key = key;
+        }
+
+        public String getPieceName() {
+            return pieceName;
+        }
+
+        public void setPieceName(String pieceName) {
+            this.pieceName = pieceName;
+        }
+
+        public String getComposer() {
+            return composer;
+        }
+
+        public void setComposer(String composer) {
+            this.composer = composer;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public int sortByPieceName(Piece currentPiece) {
+            int result = this.getPieceName().compareTo(currentPiece.getPieceName());
+            if (result == 0) {
+                // If the names are same sort by the name of the composer alphabetically
+                result = this.getComposer().compareTo(currentPiece.getComposer());
+            }
+            return result;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read the number of pieces
+        int numberOfPieces = Integer.parseInt(scanner.nextLine());
+
+        // Create a list to store each piece
+        List<Piece> allPieces = new ArrayList<>();
+
+        for (int i = 0; i < numberOfPieces; i++) {
+            String[] inputArray = scanner.nextLine().split("\\|"); // Split the input into parts so we can use it properly
+
+            String currentPiece = inputArray[0];
+            String currentComposer = inputArray[1];
+            String currentKey = inputArray[2];
+
+            // Add the piece to the list of pieces
+            allPieces.add(new Piece(currentPiece, currentComposer, currentKey));
+        }
+        String command;
+        while (!"Stop".equals(command = scanner.nextLine())) {
+
+            String[] commandArray = command.split("\\|"); // Split the command into parts so we can use it properly
+
+            String currentPiece = commandArray[1]; // It is present in each command so we take it outside the conditions in order not to declare it every time
+
+            // Check if the command starts with 'Add'
+            if (commandArray[0].equals("Add")) {
+
+                String currentComposer = commandArray[2];
+                String currentKey = commandArray[3];
+
+                boolean notPresent = true;
+
+                // Check if the piece is in the collection
+                for (Piece piece : allPieces) {
+                    if (piece.getPieceName().equals(currentPiece)) {
+                        notPresent = false;
+                        System.out.printf("%s is already in the collection!\n", currentPiece);
+                        break; // Exit the loop as we don't need to iterate any more
+                    }
+                }
+
+                // If the piece is not present
+                if (notPresent) {
+                    // Add it to the collection
+                    allPieces.add(new Piece(currentPiece, currentComposer, currentKey));
+
+                    // Print proper message
+                    System.out.printf("%s by %s in %s added to the collection!\n", currentPiece, currentComposer, currentKey);
+                }
+            }
+            // Check if the command starts with 'Remove'
+            else if (commandArray[0].equals("Remove")) {
+
+                boolean notPresent = true;
+
+                // Check if the piece is in the collection
+                for (Piece piece : allPieces) {
+                    if (piece.getPieceName().equals(currentPiece)) {
+                        notPresent = false;
+
+                        // Remove the piece
+                        allPieces.remove(piece);
+
+                        // Print proper message
+                        System.out.printf("Successfully removed %s!\n", currentPiece);
+                        break; // Exit the loop as we don't need to iterate any more
+                    }
+                }
+
+                // If the piece is not present
+                if (notPresent) {
+                    System.out.printf("Invalid operation! %s does not exist in the collection.\n", currentPiece);
+                }
+            }
+            // Check if the command starts with 'ChangeKey'
+            else if (commandArray[0].equals("ChangeKey")) {
+                String newKey = commandArray[2];
+
+                boolean notPresent = true;
+
+                // Check if the piece is in the collection
+                for (Piece piece : allPieces) {
+                    if (piece.getPieceName().equals(currentPiece)) {
+                        notPresent = false;
+
+                        // Change the old key with the given one
+                        piece.setKey(newKey);
+
+                        // Print proper message
+                        System.out.printf("Changed the key of %s to %s!\n", currentPiece, newKey);
+                        break; // Exit the loop as we don't need to iterate any more
+                    }
+                }
+
+                // If the piece is not present
+                if (notPresent) {
+                    System.out.printf("Invalid operation! %s does not exist in the collection.\n", currentPiece);
+                }
+            }
+        }
+
+        Collections.sort(allPieces, Piece::sortByPieceName);
+
+        for (Piece piece : allPieces) {
+            System.out.printf("%s -> Composer: %s, Key: %s\n", piece.getPieceName(), piece.getComposer(), piece.getKey());
+        }
+    }
+}
