@@ -1,0 +1,67 @@
+package com.company;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        String stops = scanner.nextLine();
+
+        String command;
+        while (!"Travel".equals(command = scanner.nextLine())) {
+            String[] commandsArray = command.split(":"); // Split the input so we can use the information properly
+
+            // Check if the command starts with 'Add Stop'
+            if (commandsArray[0].equals("Add Stop")) {
+
+                int index = Integer.parseInt(commandsArray[1]);
+                // Check if the index is valid
+                if (index >= 0 && index < stops.length()) {
+                    String stringToInsert = commandsArray[2];
+
+                    String newString = stops.substring(0, index)
+                            + stringToInsert
+                            + stops.substring(index);
+
+                    stops = newString; // Update the old string
+                }
+            }
+            // Check if the command starts with 'Remove Stop'
+            else if (commandsArray[0].equals("Remove Stop")) {
+
+                int startIndex = Integer.parseInt(commandsArray[1]);
+                int endIndex = Integer.parseInt(commandsArray[2]);
+
+                if (startIndex <= endIndex) {
+                    if (startIndex >= 0 && startIndex < stops.length() && endIndex < stops.length()) {
+                        StringBuilder removeElementsFromStops = new StringBuilder(stops);
+
+                        int elementsToDelete = endIndex - startIndex;
+                        while ((elementsToDelete--) >= 0) {
+                            removeElementsFromStops.deleteCharAt(startIndex);
+                        }
+
+                        stops = removeElementsFromStops.toString(); // Update the old string
+                    }
+                }
+            }
+            // Check if the command starts with 'Switch'
+            else if (commandsArray[0].equals("Switch")) {
+
+                String oldString = commandsArray[1];
+                String newString = commandsArray[2];
+
+                stops = stops.replaceAll(oldString, newString);
+            }
+
+            System.out.println(stops);
+        }
+
+        System.out.println("Ready for world tour! Planned stops: " + stops);
+    }
+}
