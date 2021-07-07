@@ -1,0 +1,32 @@
+package com.company;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        List<String> destinations = new ArrayList<>();
+
+        String string = scanner.nextLine();
+
+        Pattern pattern = Pattern.compile("([=\\/])(?<name>[A-Z][a-zA-z]{2,})(\\1)");
+        Matcher matcher = pattern.matcher(string);
+
+        while (matcher.find()) {
+            destinations.add(matcher.group("name"));
+        }
+
+        System.out.println("Destinations: " + String.join(", ", destinations));
+        AtomicInteger travelPoints = new AtomicInteger(0);
+        destinations.forEach(e -> {
+            travelPoints.set(travelPoints.get() + e.length());
+        });
+
+        System.out.println("Travel Points: " + travelPoints.get());
+    }
+}
