@@ -1,0 +1,50 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        String text = "";
+
+        ArrayDeque<String> textPhases = new ArrayDeque<>(); // Save each state of the text
+
+        int numberOfCommands = Integer.parseInt(scanner.nextLine());
+
+        while ((numberOfCommands--) != 0) {
+            String[] inputArray = scanner.nextLine().split("\\s+");
+
+            // Check if the input begins with '1'
+            if (inputArray[0].equals("1")) {
+                textPhases.push(text); // Insert the current state of the text /before being changed/
+
+                String stringToAppend = inputArray[1];
+                text += stringToAppend;
+            }
+
+            // Check if the input begins with '2'
+            else if (inputArray[0].equals("2")) {
+                textPhases.push(text); // Insert the current state of the text /before being changed/
+
+                int numberOfElementsToErase = Integer.parseInt(inputArray[1]);
+                text = text.substring(0, text.length() - numberOfElementsToErase);
+            }
+
+            // Check if the input begins with '3'
+            else if (inputArray[0].equals("3")) {
+                int index = Integer.parseInt(inputArray[1]) - 1;
+                if (text.length() > 0) {
+                    System.out.println(text.charAt(index));
+                }
+            }
+
+            // Check if the input begins with '4'
+            else if (inputArray[0].equals("4")) {
+                text = textPhases.pop(); // Return to the previous state of the text
+            }
+
+        }
+    }
+}
