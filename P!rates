@@ -1,0 +1,160 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static class City {
+        private String name;
+        private int population;
+        private int gold;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getPopulation() {
+            return population;
+        }
+
+        public void setPopulation(int population) {
+            this.population = population;
+        }
+
+        public int getGold() {
+            return gold;
+        }
+
+        public void setGold(int gold) {
+            this.gold = gold;
+        }
+
+        public int sortByGoldInDescendingOrder(City currentCity) {
+            int result = currentCity.getGold() - this.getGold();
+            if (result == 0) {
+                // Sort by names in ascending order
+                result = this.getName().compareTo(currentCity.getName());
+            }
+            return result;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Store the cities and their treasures in a map
+        List<City> citiesAndTheirTreasure = new ArrayList<>();
+
+        String command;
+
+        // Add the cities to the list of cities
+        while (!"Sail".equals(command = scanner.nextLine())) {
+
+            String[] commandArray = command.split("[|]{2}"); // Split the command into parts so we can use it properly
+
+            String currentCityName = commandArray[0];
+            int currentPopulation = Integer.parseInt(commandArray[1]);
+            int currentGold = Integer.parseInt(commandArray[2]);
+
+            boolean cityIsPresent = false;
+
+            // Chek if the city is present
+            for (City city : citiesAndTheirTreasure) {
+                if (city.getName().equals(currentCityName)) {
+                    cityIsPresent = true;
+
+                    // Update the gold in the city
+                    city.setGold(currentGold + city.getGold());
+
+                    // Update the population
+                    city.setPopulation(currentPopulation + city.getPopulation());
+                    break; // Exit the loop as we have found the city
+                }
+            }
+
+            // If the city is not present
+            if (!cityIsPresent) {
+                // Add the new city
+                City newCity = new City();
+                newCity.setName(currentCityName);
+                newCity.setPopulation(currentPopulation);
+                newCity.setGold(currentGold);
+                citiesAndTheirTreasure.add(newCity); // Add the new city to the list of cities
+            }
+        }
+
+        // Read events
+        while (!"End".equals(command = scanner.nextLine())) {
+            String[] commandArray = command.split("=>"); // Split the command into parts so we can use it properly
+
+            // Check if the command begins with 'Plunder'
+            if (commandArray[0].equals("Plunder")) {
+
+                String attackedCity = commandArray[1];
+                int killedPeople = Integer.parseInt(commandArray[2]);
+                int takenGold = Integer.parseInt(commandArray[3]);
+
+                // Find the town in the list and remove gold and population
+                for (int i = 0; i < citiesAndTheirTreasure.size(); i++) {
+                    if (citiesAndTheirTreasure.get(i).getName().equals(attackedCity)) {
+
+                        // Decrease the number of population
+                        citiesAndTheirTreasure.get(i).setPopulation(citiesAndTheirTreasure.get(i).getPopulation() - killedPeople);
+
+                        // Decrease the gold
+                        citiesAndTheirTreasure.get(i).setGold(citiesAndTheirTreasure.get(i).getGold() - takenGold);
+
+                        System.out.printf("%s plundered! %d gold stolen, %d citizens killed.\n", attackedCity, takenGold, killedPeople);
+
+                        // If (population or gold) reaches zero, the town is disbanded.
+                        if (citiesAndTheirTreasure.get(i).getGold() <= 0 || citiesAndTheirTreasure.get(i).getPopulation() <= 0) {
+                            System.out.printf("%s has been wiped off the map!\n", attackedCity); // Print proper message
+                            citiesAndTheirTreasure.remove(i); // Remove the city from the list of cities
+                        }
+                        break; // Exit the loop as we don't need to iterate
+                    }
+                }
+
+            }
+            // In all other cases the command will begin with 'Prosper'
+            else {
+                String prosperedCity = commandArray[1];
+                int addedGold = Integer.parseInt(commandArray[2]);
+                if (addedGold > 0) {
+
+                    // Increase the town's gold reserves by the respective amount
+                    for (City city : citiesAndTheirTreasure) {
+                        if (city.getName().equals(prosperedCity)) {
+                            city.setGold(addedGold + city.getGold());
+                            System.out.printf("%d gold added to the city treasury. %s now has %d gold.\n", addedGold, prosperedCity, city.getGold());
+                            break; // Exit the loop as we don't need to iterate
+                        }
+                    }
+
+                } else {
+                    System.out.println("Gold added cannot be a negative number!");
+                }
+            }
+        }
+
+        // If there are no settlements left to plunder
+        if (citiesAndTheirTreasure.isEmpty()) {
+            System.out.println("Ahoy, Captain! All targets have been plundered and destroyed!");
+        }
+        // If it has print the following:
+        else {
+            // Sort the cities by their gold in descending order
+            Collections.sort(citiesAndTheirTreasure, City::sortByGoldInDescendingOrder);
+
+            System.out.println("Ahoy, Captain! There are " + citiesAndTheirTreasure.size() + " wealthy settlements to go to:");
+
+            for (City city : citiesAndTheirTreasure) {
+                System.out.println(city.getName() + " -> Population: " + city.getPopulation() + " citizens, Gold: " + city.getGold() + " kg");
+            }
+        }
+    }
+}
