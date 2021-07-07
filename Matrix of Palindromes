@@ -1,0 +1,41 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int[] input = Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+
+        int rows = input[0];
+        int columns = input[1];
+
+        String[][] matrix = new String[rows][columns];
+
+        for (int row = 0; row < matrix.length; row++) {
+
+            for (int column = 0; column < matrix[row].length; column++) {
+                String newWord = "";
+                newWord += (char) (row + 97); // First character
+                newWord += (char) (row + column + 97);
+                newWord += (char) (row + 97); // Last character
+
+                matrix[row][column] = newWord;
+            }
+        }
+        printMatrix(matrix);
+    }
+
+    private static void printMatrix(String[][] matrix) {
+        for (int row = 0; row < matrix.length; row++) {
+
+            for (int column = 0; column < matrix[row].length; column++) {
+
+                System.out.print(matrix[row][column] + " ");
+            }
+            System.out.println();
+        }
+    }
+}
