@@ -1,0 +1,37 @@
+package com.company;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read the input
+        String inputLine = scanner.nextLine();
+
+        // Create a variable to store the sum of calories
+        int sumOfCalories = 0;
+
+        // Create the pattern to validate the product
+        Pattern regex = Pattern.compile("([#\\|])(?<itemName>[A-Za-z ]+)(\\1)(?<expirationDate>[0-9]{2}\\/[0-9]{2}\\/[0-9]{2})(\\1)(?<calories>[0-9]+)(\\1)");
+        Matcher matcherForSumOfCalories = regex.matcher(inputLine);
+
+        while (matcherForSumOfCalories.find()) {
+            sumOfCalories += Integer.parseInt(matcherForSumOfCalories.group("calories"));
+        }
+
+        System.out.println("You have food to last you for: " + sumOfCalories / 2000 + " days!");
+
+        // Create a new matcher to provide valid output
+        Matcher matcherForOutput = regex.matcher(inputLine);
+
+        while (matcherForOutput.find()) {
+            System.out.printf("Item: %s, Best before: %s, Nutrition: %d\n", matcherForOutput.group("itemName"),
+                    matcherForOutput.group("expirationDate"), Integer.parseInt(matcherForOutput.group("calories")));
+        }
+    }
+}
