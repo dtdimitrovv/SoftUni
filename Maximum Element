@@ -1,0 +1,54 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    static int maxElementInStack(ArrayDeque<Integer> integerStack) {
+
+        int maxElement = Integer.MIN_VALUE;
+
+        // Check if the element is present
+        while (!integerStack.isEmpty()) {
+            if (integerStack.peek() > maxElement) {
+                maxElement = integerStack.peek();
+            }
+            integerStack.pop();
+        }
+        return maxElement;
+    }
+
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        ArrayDeque<Integer> integerStack = new ArrayDeque<>();
+
+        int numberOfCommands = Integer.parseInt(scanner.nextLine());
+        while ((numberOfCommands--) != 0) {
+
+            int[] currentInput = Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+
+            // Check if the command begins with '1'
+            if (currentInput[0] == 1) {
+                Integer elementToPushInStack = currentInput[1];
+                integerStack.push(elementToPushInStack);
+            }
+
+            // Check if the command begins with '2'
+            else if (currentInput[0] == 2) {
+                if (!integerStack.isEmpty()) {
+                    integerStack.pop();
+                }
+            }
+
+            // Check if the command begins with '3'
+            else if (currentInput[0] == 3) {
+                if (!integerStack.isEmpty()) {
+                    System.out.println(Collections.max(integerStack));
+                }
+            }
+        }
+
+    }
+}
