@@ -1,0 +1,75 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        String activationKey = scanner.nextLine();
+
+        String command;
+        while (!"Generate".equals(command = scanner.nextLine())) {
+            String[] commandsArray = command.split(">>>"); // Split the command into different parts so we can use them properly
+            // Check if the command starts with 'Contains'
+            if (commandsArray[0].equals("Contains")) {
+
+                String givenSubstring = commandsArray[1];
+                // Check if the raw activation key contains the given substring
+                if (activationKey.contains(givenSubstring)) {
+                    System.out.println(activationKey + " contains " + givenSubstring);
+                } else {
+                    System.out.println("Substring not found!");
+                }
+            }
+
+            // Check if the command starts with 'Flip'
+            else if (commandsArray[0].equals("Flip")) {
+
+                int startIndex = Integer.parseInt(commandsArray[2]);
+                int endIndex = Integer.parseInt(commandsArray[3]);
+
+                // Check if we have to flip to upper
+                if (commandsArray[1].equals("Upper")) {
+
+                    for (int i = startIndex; i < endIndex; i++) {
+                        // Update the string
+                        activationKey = activationKey.substring(0, i) +
+                                Character.toUpperCase(activationKey.charAt(i)) +
+                                activationKey.substring(i + 1);
+                    }
+
+                }
+                // In all other cases we will have to flip to lower
+                else {
+
+                    for (int i = startIndex; i < endIndex; i++) {
+                        // Update the string
+                        activationKey = activationKey.substring(0, i) +
+                                Character.toLowerCase(activationKey.charAt(i)) +
+                                activationKey.substring(i + 1);
+                    }
+                }
+                System.out.println(activationKey);
+            }
+            // Check if the command starts with 'Slice'
+            else if (commandsArray[0].equals("Slice")) {
+                StringBuilder deleteCharsFromActivationKey = new StringBuilder(activationKey);
+
+                int startIndex = Integer.parseInt(commandsArray[1]);
+                int endIndex = Integer.parseInt(commandsArray[2]);
+
+                int elementsToDelete = endIndex - startIndex;
+                while ((elementsToDelete--) != 0) {
+                    deleteCharsFromActivationKey.deleteCharAt(startIndex);
+                }
+                // Update the string
+                activationKey = deleteCharsFromActivationKey.toString();
+
+                System.out.println(activationKey);
+            }
+        }
+        System.out.println("Your activation key is: " + activationKey);
+    }
+}
