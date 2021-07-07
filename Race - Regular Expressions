@@ -1,0 +1,65 @@
+package com.company;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Map<String, Integer> racers = new LinkedHashMap<>();
+
+        String[] inputOfRacers = scanner.nextLine().split(",\\s+");
+
+        for (int i = 0; i < inputOfRacers.length; i++) {
+            racers.put(inputOfRacers[i], 0);
+        }
+
+        String input;
+
+        while (!"end of race".equals(input = scanner.nextLine())) {
+            Pattern regexName = Pattern.compile("[A-Za-z]");
+            Matcher word = regexName.matcher(input);
+
+            String name = "";
+
+            while (word.find()) {
+                name += word.group();
+            }
+            //System.out.println(name);
+
+            Pattern regexNumbers = Pattern.compile("[0-9]");
+            Matcher numbers = regexNumbers.matcher(input);
+
+            int sumOfDigits = 0;
+
+            while (numbers.find()) {
+                sumOfDigits += Integer.parseInt(numbers.group());
+            }
+            //System.out.println(sumOfDigits);
+
+            if (racers.containsKey(name)) {
+                racers.put(name, racers.get(name) + sumOfDigits); // Update the numbers
+            }
+        }
+
+        AtomicInteger times = new AtomicInteger(1);
+
+        racers.entrySet()
+                .stream().
+                sorted((a, b) -> b.getValue().compareTo(a.getValue()))
+                .forEach(e -> {
+                    if (times.get() == 1) {
+                        System.out.println("1st place: " + e.getKey());
+                    } else if (times.get() == 2) {
+                        System.out.println("2nd place: " + e.getKey());
+                    } else if (times.get() == 3) {
+                        System.out.println("3rd place: " + e.getKey());
+                    }
+                    times.getAndIncrement();
+                });
+    }
+}
