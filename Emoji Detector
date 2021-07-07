@@ -1,0 +1,57 @@
+package com.company;
+
+import java.sql.SQLOutput;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int numberOfAllEmojis = 0; // Create a variable to count each emoji
+
+        List<String> emojisList = new ArrayList<>(); // Create a list to store each valid emoji
+
+        int coolThreshold = 1;
+
+        String input = scanner.nextLine();
+
+        Pattern digitRegex = Pattern.compile("[0-9]"); // Create a regex to find every digit
+        Matcher digitsMatcher = digitRegex.matcher(input); // Get every digit from the input
+
+        // Calculate the threshold by multiplying all digits
+        while (digitsMatcher.find()) {
+            coolThreshold *= Integer.parseInt(digitsMatcher.group());
+        }
+
+        Pattern regex = Pattern.compile("([*]{2})[A-Z][a-z]{2,}([*]{2})|([:]{2})[A-Z][a-z]{2,}([:]{2})"); // Create a regex to valid emoji
+        Matcher emojisMatcher = regex.matcher(input); // Get every valid emoji from the input
+
+        while (emojisMatcher.find()) {
+            numberOfAllEmojis++; // Increase the number of found emojis
+
+            int aSCIIValuesOfAllLetters = 0; // Create a variable to find the sum of ascii code of each letter of the emoji
+            String currentEmoji = emojisMatcher.group();
+
+            for (int i = 0; i < currentEmoji.length(); i++) {
+                // Don't include '*' and ':'
+                if (currentEmoji.charAt(i) != '*' && currentEmoji.charAt(i) != ':') {
+                    aSCIIValuesOfAllLetters += (int) currentEmoji.charAt(i);
+                }
+            }
+
+            if (aSCIIValuesOfAllLetters > coolThreshold) {
+                emojisList.add(currentEmoji);
+            }
+        }
+
+        System.out.println("Cool threshold: " + coolThreshold);
+        System.out.println(numberOfAllEmojis + " emojis found in the text. The cool ones are:");
+        for (int i = 0; i < emojisList.size(); i++) {
+            System.out.println(emojisList.get(i));
+        }
+    }
+}
