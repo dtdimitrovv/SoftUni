@@ -1,0 +1,87 @@
+package com.company;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read the number of lines
+        int numberOfLines = Integer.parseInt(scanner.nextLine());
+
+        // Create regex to split the lines and extract proper information
+        Pattern regex = Pattern.compile("(\\w+|\\W+|\\d+|\\s+)?@(?<planetName>[A-Za-z]+)(\\w+|\\W+|\\d+|\\s+)?:(?<planetPopulation>[0-9]+)(\\w+|\\W+|\\d+|\\s+)?(?<attackType>[AD])!(\\w+|\\W+|\\d+|\\s+)?->(?<soldierCount>[0-9]+)(\\w+|\\W+|\\d+|\\s+)?");
+
+        // Create a list to store the attacked planets
+        List<String> attackedPlanets = new ArrayList<>();
+
+        // Create a list to store the destroyed planets
+        List<String> destroyedPlanets = new ArrayList<>();
+
+        for (int i = 0; i < numberOfLines; i++) {
+
+            // Read the current line
+            String currentEncryptedMessage = scanner.nextLine();
+
+            // Count the number of [s, t, a, r] and [S, T, A, R]
+            int numberOfStarLetters = 0;
+
+            for (int i1 = 0; i1 < currentEncryptedMessage.length(); i1++) {
+                if (currentEncryptedMessage.charAt(i1) == 'S' || currentEncryptedMessage.charAt(i1) == 's' || currentEncryptedMessage.charAt(i1) == 'T' || currentEncryptedMessage.charAt(i1) == 't' ||
+                        currentEncryptedMessage.charAt(i1) == 'A' || currentEncryptedMessage.charAt(i1) == 'a' || currentEncryptedMessage.charAt(i1) == 'R' || currentEncryptedMessage.charAt(i1) == 'r') {
+                    numberOfStarLetters++;
+                }
+            }
+
+            // Create a string to modify the current message easily
+            StringBuilder newString = new StringBuilder(currentEncryptedMessage);
+
+            for (int i1 = 0; i1 < newString.length(); i1++) {
+
+                // Remove the count from the current ASCII value of each symbol of the encrypted message
+                char newChar = (char) (currentEncryptedMessage.charAt(i1) - numberOfStarLetters);
+
+                // Replace the old with the new char
+                newString.deleteCharAt(i1); // Delete the char at the given position
+                newString.insert(i1, newChar); // Insert the new char at the given position
+            }
+
+            // Update the string
+            currentEncryptedMessage = newString.toString();
+
+            // Create a matcher to extract information from the decrypted message
+            Matcher getDataForPlanets = regex.matcher(currentEncryptedMessage);
+
+            while (getDataForPlanets.find()) {
+//                System.out.println(getDataForPlanets.group("planetName") + " " + getDataForPlanets.group("planetPopulation")
+//                        + " " + getDataForPlanets.group("attackType") + " " + getDataForPlanets.group("soldierCount"));
+//
+                // Check if the planet is attacked
+                if (getDataForPlanets.group("attackType").equals("A")) {
+                    attackedPlanets.add(getDataForPlanets.group("planetName"));
+                }
+                // In all other cases it will equal "D"
+                else {
+                    destroyedPlanets.add(getDataForPlanets.group("planetName"));
+                }
+            }
+        }
+
+        // Sort the planets alphabetically
+        Collections.sort(attackedPlanets);
+        Collections.sort(destroyedPlanets);
+
+        System.out.println("Attacked planets: " + attackedPlanets.size());
+        for (String planet : attackedPlanets) {
+            System.out.println("-> " + planet);
+        }
+
+        System.out.println("Destroyed planets: " + destroyedPlanets.size());
+        for (String planet : destroyedPlanets) {
+            System.out.println("-> " + planet);
+        }
+    }
+}
