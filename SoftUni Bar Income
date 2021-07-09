@@ -1,0 +1,59 @@
+package com.company;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Pattern regex = Pattern.compile("%(?<customer>[A-Z][a-z0-9_]+)%" +
+                "([\\w\\W\\s]+)?" +
+                "<(?<product>\\w+)>" +
+                "([\\w\\W]+)?" +
+                "\\|(?<quantity>([A-Za-z_]+)?[0-9]+)\\|" +
+                "([A-Za-z_]+)?" +
+                "(?<price>([A-Za-z_]+)?([0-9]+[.]?[0-9]+))\\$" +
+                "(\\w+)?");
+
+        double wholePrice = 0;
+
+        String input;
+
+        while (!"end of shift".equals(input = scanner.nextLine())) {
+            Matcher matcher = regex.matcher(input);
+
+            while (matcher.find()) {
+                String quantity = matcher.group("quantity");
+
+                StringBuilder repairQuantity = new StringBuilder(quantity);
+                for (int i = 0; i < repairQuantity.length(); ) {
+                    if (!Character.isDigit(repairQuantity.charAt(i))) {
+                        repairQuantity.deleteCharAt(i);
+                    } else {
+                        i++;
+                    }
+                }
+
+                StringBuilder repairPrice = new StringBuilder(matcher.group("price"));
+                for (int i = 0; i < repairPrice.length(); ) {
+                    if (!Character.isDigit(repairPrice.charAt(i)) && repairPrice.charAt(i) != '.') {
+                        repairPrice.deleteCharAt(i);
+                    } else {
+                        i++;
+                    }
+                }
+
+                double currentPrice = Integer.parseInt(repairQuantity.toString()) * Double.parseDouble(repairPrice.toString());
+                wholePrice += currentPrice;
+
+                System.out.printf("%s: %s - %.2f\n", matcher.group("customer"), matcher.group("product"), currentPrice);
+            }
+        }
+
+        System.out.printf("Total income: %.2f\n", wholePrice);
+    }
+}
