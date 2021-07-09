@@ -1,0 +1,98 @@
+package com.company;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        String inputOfDegrees = scanner.nextLine();
+        Pattern findNumber = Pattern.compile("[0-9]+"); // Create a regex to find the number in the input of degrees
+        Matcher matcher = findNumber.matcher(inputOfDegrees);
+
+        int angle = 0;
+        while (matcher.find()) {
+            angle = Integer.parseInt(matcher.group());
+        }
+
+        char[][] matrix = readMatrix(scanner);
+
+        // Rotate the matrix X times where X is angle / 90
+        for (int i = 0; i < angle / 90; i++) {
+            matrix = rotateBy90Degrees(matrix);
+        }
+
+        printMatrix(matrix);
+    }
+
+    private static char[][] rotateBy90Degrees(char[][] matrix) {
+        char[][] newMatrix = new char[matrix[0].length][matrix.length];
+
+        for (int row = 0; row < newMatrix.length; row++) {
+            newMatrix[row] = getMatrixColumn(matrix, row); // matrix[row].length is the length of each word of the matrix
+        }
+        return newMatrix;
+    }
+
+    private static char[] getMatrixColumn(char[][] matrix, int column) {
+        char[] newMatrix = new char[matrix.length]; // matrix.length shows how many elements there will be in the matrix
+
+        int row = matrix.length - 1;
+
+        while (row >= 0) {
+            newMatrix[matrix.length - 1 - row] = matrix[row][column]; // The first symbol is the newMatrix is the lowest symbol in each column and so... until row is 0
+            row--;
+        }
+        return newMatrix;
+    }
+
+    private static char[][] readMatrix(Scanner scanner) {
+        List<String> inputs = new ArrayList<>(); // Store the input in a list as we don't know its size
+
+        int maxWordLength = Integer.MIN_VALUE; // We need to find the length of the longest word so that these which are smaller can have space so that the output is correct
+
+        String input;
+        while (!"END".equals(input = scanner.nextLine())) {
+            if (input.length() > maxWordLength) {
+                maxWordLength = input.length();
+            }
+            inputs.add(input);
+        }
+
+        // Create a matrix where the rows are equal to size of the input /to the number of entered words/
+        char[][] matrix = new char[inputs.size()][maxWordLength];
+
+        for (int i = 0; i < inputs.size(); i++) {
+            String currentInput = inputs.get(i);
+
+            char[] convertCurrentInputToArray = new char[maxWordLength]; // Each array of the 2D matrix will have the length of the longest word
+
+            // Fill in the matrix
+            for (int j = 0; j < maxWordLength; j++) {
+                if (j >= currentInput.length()) { // If we have copied the symbols of the current word and still have unfilled positions then we add a space to them
+                    convertCurrentInputToArray[j] = ' ';
+                } else {
+                    convertCurrentInputToArray[j] = currentInput.charAt(j);
+                }
+            }
+
+            matrix[i] = convertCurrentInputToArray;
+        }
+        return matrix;
+    }
+
+    private static void printMatrix(char[][] matrix) {
+        for (int row = 0; row < matrix.length; row++) {
+
+            for (int column = 0; column < matrix[row].length; column++) {
+
+                System.out.print(matrix[row][column]);
+            }
+            System.out.println();
+        }
+    }
+
+}
