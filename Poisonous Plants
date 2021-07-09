@@ -1,0 +1,43 @@
+package com.company;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int numberOfPlants = Integer.parseInt(scanner.nextLine());
+
+        List<Integer> plants = Arrays.stream(scanner.nextLine().split("\\s+")).map(Integer::parseInt).collect(Collectors.toList());
+
+        int days = 0;
+
+
+        while (true) {
+            ArrayDeque<Integer> indexesOfPlantToBeRemoved = new ArrayDeque<>();
+
+            boolean noPlantDies = true;
+
+            for (int i = 0; i < plants.size() - 1; i++) {
+                if (plants.get(i) < plants.get(i + 1)) {
+                    indexesOfPlantToBeRemoved.add(plants.get(i + 1));
+                    noPlantDies = false;
+                }
+            }
+
+            if (noPlantDies) {
+                break;
+            }
+
+            days++;
+
+            while(!indexesOfPlantToBeRemoved.isEmpty()){
+                plants.remove(indexesOfPlantToBeRemoved.pop());
+            }
+        }
+
+        System.out.println(days);
+    }
+}
