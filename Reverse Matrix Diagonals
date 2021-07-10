@@ -1,0 +1,80 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int[] dimensions = Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+
+        int rows = dimensions[0];
+        int columns = dimensions[1];
+
+        int[][] matrix = new int[rows][columns];
+
+        // Fill in the matrix
+        for (int row = 0; row < matrix.length; row++) {
+            matrix[row] = readArray(scanner);
+        }
+
+//        if (rows == 1) {
+//            for (int i = columns - 1; i >= 0; i--) {
+//                System.out.println(matrix[rows - 1][i]);
+//            }
+//            return;
+//        }
+
+        //column -1 ; 0
+        for (int currentColumn = columns - 1; currentColumn > 0; currentColumn--) {
+            printList(getFirstDiagonals(matrix, rows - 1, currentColumn));
+        }
+
+        // row - 1 ; 0
+        for (int currentRow = rows - 1; currentRow >= 0; currentRow--) {
+            printList(getSecondDiagonals(matrix, currentRow));
+        }
+    }
+
+    private static List<Integer> getFirstDiagonals(int[][] matrix, int row, int column) {
+        List<Integer> result = new ArrayList<>();
+
+        while (column < matrix[row].length) {
+            result.add(matrix[row][column]);
+            column++;
+            row--;
+            if (row < 0) {
+                break;
+            }
+        }
+        return result;
+    }
+
+    private static List<Integer> getSecondDiagonals(int[][] matrix, int row) {
+        List<Integer> result = new ArrayList<>();
+
+        int column = 0;
+
+        while (row >= 0) {
+            result.add(matrix[row][column]);
+            column++;
+            if (column == matrix[row].length) {
+                break;
+            }
+            row--;
+        }
+        return result;
+    }
+
+    private static void printList(List<Integer> list) {
+        for (int i = 0; i < list.size(); i++) {
+            System.out.print(list.get(i) + " ");
+        }
+        System.out.println();
+    }
+
+    private static int[] readArray(Scanner scanner) {
+        return Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+    }
+}
