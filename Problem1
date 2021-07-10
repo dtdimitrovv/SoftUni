@@ -1,0 +1,43 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read the amount of biscuits a worker produces per day
+        int numberOfBiscuitsPerDayPerWorker = Integer.parseInt(scanner.nextLine());
+
+        // Read the number of workers in the factory
+        int numberOfWorkers = Integer.parseInt(scanner.nextLine());
+
+        int targetBiscuits = Integer.parseInt(scanner.nextLine());
+
+        int producedBiscuits = 0;
+
+        for (int i = 1; i <= 30; i++) {
+
+            int biscuitsPerDay = numberOfBiscuitsPerDayPerWorker * numberOfWorkers;
+
+            if (i % 3 == 0) {
+                // Lower the production with 25%
+                biscuitsPerDay = (int) Math.floor(biscuitsPerDay * 0.75);
+            }
+
+            producedBiscuits += biscuitsPerDay;
+        }
+
+        System.out.println("You have produced " + producedBiscuits + " biscuits for the past month.");
+
+        if (producedBiscuits > targetBiscuits) {
+            double percentage = (producedBiscuits - targetBiscuits) / (targetBiscuits * 1.0) * 100;
+            System.out.printf("You produce %.2f percent more biscuits.\n", percentage);
+        } else {
+            double percentage = (targetBiscuits - producedBiscuits) / (targetBiscuits * 1.0) * 100;
+            System.out.printf("You produce %.2f percent less biscuits.\n", percentage);
+        }
+    }
+
+}
