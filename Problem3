@@ -1,0 +1,108 @@
+package com.company;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        List<String> products = Arrays.stream(scanner.nextLine().split("\\|")).collect(Collectors.toList());
+
+        String command;
+        while (!"Shop!".equals(command = scanner.nextLine())) {
+            String[] tokens = command.split("%"); // Split the command so we can use it properly
+
+            // Check if the command starts with 'Important'
+            if (tokens[0].equals("Important")) {
+                String product = tokens[1];
+
+                // Check if the product exists
+                if (products.contains(product)) {
+                    // Remove the product from its current position
+                    products.remove(product);
+                }
+                // Insert it at the beginning of the list even if it didn't exist
+                products.add(0, product);
+            }
+
+            // Check if the command starts with 'Add'
+            else if (tokens[0].equals("Add")) {
+                String product = tokens[1];
+
+                // Check if the product exists
+                if (products.contains(product)) {
+                    System.out.println("The product is already in the list.");
+                } else {
+                    // If it didn't exist, add it to the end of the list
+                    products.add(product);
+                }
+            }
+
+            // Check if the command starts with 'Swap'
+            else if (tokens[0].equals("Swap")) {
+
+                String product1 = tokens[1];
+                String product2 = tokens[2];
+
+                boolean firstProductExists = false;
+                boolean secondProductExists = false;
+
+                // Check if the first product exists
+                if (products.contains(product1)) {
+                    firstProductExists = true;
+                }
+
+                // Check if the second product exists
+                if (products.contains(product2)) {
+                    secondProductExists = true;
+                }
+
+                // If both products exist
+                if (firstProductExists && secondProductExists) {
+
+                    int indexOfFirstProduct = products.indexOf(product1);
+                    int indexOfSecondProduct = products.indexOf(product2);
+
+                    products.set(indexOfFirstProduct, product2);
+                    products.set(indexOfSecondProduct, product1);
+                }
+
+                // If the first doesn't exist
+                else if (!firstProductExists) {
+                    System.out.println("Product " + product1 + " missing!");
+                }
+
+                // If the second doesn't exist
+                else {
+                    System.out.println("Product " + product2 + " missing!");
+                }
+            }
+
+            // Check if the command starts with 'Remove'
+            else if (tokens[0].equals("Remove")) {
+
+                String product = tokens[1];
+
+                // Check if the product exists
+                if (products.contains(product)) {
+                    products.remove(product);
+                } else {
+                    System.out.println("Product " + product + " isn't in the list.");
+                }
+            }
+
+            // Check if the command starts with 'Reversed:'
+            else if (tokens[0].equals("Reversed:")) {
+
+            }
+        }
+
+        // Print the products
+        for (int i = 0; i < products.size(); i++) {
+            System.out.printf("%d. %s\n", i + 1, products.get(i));
+        }
+    }
+
+}
