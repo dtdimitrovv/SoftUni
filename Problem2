@@ -1,0 +1,75 @@
+package com.company;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        List<String> particles = Arrays.stream(scanner.nextLine().split("\\|")).collect(Collectors.toList());
+
+        String command;
+        while (!"Done".equals(command = scanner.nextLine())) {
+            String[] tokens = command.split("\\s+"); // Split the command so we can use it properly
+
+            // Check if the command starts with 'Add'
+            if (tokens[0].equals("Add")) {
+
+                String particle = tokens[1];
+                int index = Integer.parseInt(tokens[2]);
+
+                // Check if the index is valid
+                if (index >= 0 && index < particles.size()) {
+                    particles.add(index, particle);
+                }
+            }
+
+            // Check if the command starts with 'Remove'
+            else if (tokens[0].equals("Remove")) {
+                int index = Integer.parseInt(tokens[1]);
+
+                // Check if the index is valid
+                if (index >= 0 && index < particles.size()) {
+                    particles.remove(index);
+                }
+            }
+
+            // Check if the command starts with 'Add'
+            else if (tokens[0].equals("Check")) {
+
+                if (tokens[1].equals("Even")) {
+                    printStringAtEvenIndexes(particles);
+                } else {
+                    printStringAtOddIndexes(particles);
+                }
+            }
+        }
+
+        System.out.print("You crafted ");
+        for (int i = 0; i < particles.size(); i++) {
+            System.out.print(particles.get(i));
+        }
+        System.out.print("!");
+    }
+
+    private static void printStringAtEvenIndexes(List<String> particles) {
+        for (int i = 0; i < particles.size(); i++) {
+            if (i % 2 == 0) {
+                System.out.print(particles.get(i) + " ");
+            }
+        }
+        System.out.println();
+    }
+
+    private static void printStringAtOddIndexes(List<String> particles) {
+        for (int i = 0; i < particles.size(); i++) {
+            if (i % 2 != 0) {
+                System.out.print(particles.get(i) + " ");
+            }
+        }
+        System.out.println();
+    }
+
+}
