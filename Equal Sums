@@ -1,0 +1,44 @@
+package com.company;
+
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class Main {
+
+    static int sumOfElements(int[] array, int startingIndex, int endIndex) {
+        int sum = 0;
+        for (int i = startingIndex; i < endIndex; i++) {
+            sum += array[i];
+        }
+        return sum;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int[] array = Arrays.stream(scanner.nextLine().split(" ")).mapToInt(e -> Integer.parseInt(e)).toArray(); // Read the array
+
+        // First process the element at index 0
+        int sumOfLeftElements = 0; // Because there is nothing before index 0
+        int sumOfRightElements = sumOfElements(array, 1, array.length);
+        
+        if (sumOfLeftElements == sumOfRightElements) {
+            System.out.println(0);
+            return; // We stop the program, it will not execute anything below
+        }
+
+        for (int i = 1; i < array.length; i++) {
+            sumOfLeftElements = sumOfElements(array, 0, i); // From 0 till the index (we don't include the number at index 'i' in the sum)
+
+            sumOfRightElements = sumOfElements(array, i + 1, array.length); // We start from i+1 to check if 'i' is the index we are looking for
+
+            if (sumOfLeftElements == sumOfRightElements) {
+                System.out.println(i);
+                return; // We stop the program, it will not execute anything below
+            }
+        }
+        // In case there is no index we have to print no
+        System.out.println("no");
+    }
+}
+//1000 -5 1 1 1 1 1
