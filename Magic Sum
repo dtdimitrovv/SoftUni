@@ -1,0 +1,31 @@
+package com.company;
+
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class Main {
+
+    static boolean numberIsInArray(int numberToLookFor, int[] array, int currentIndex) {
+        /// Look one element after 'array[i]' in the main function
+        for (int i = currentIndex + 1; i < array.length; i++) {
+            if (array[i] == numberToLookFor) {
+                return true;
+            }
+        }
+        return false; /// Meaning NOT FOUND
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int[] array = Arrays.stream(scanner.nextLine().split(" ")).mapToInt(e -> Integer.parseInt(e)).toArray();
+        int number = Integer.parseInt(scanner.nextLine());
+
+        for (int i = 0; i < array.length; i++) {
+            int numberToLookFor = number - array[i];
+            if (numberIsInArray(numberToLookFor, array, i)) {
+                System.out.println(array[i] + " " + numberToLookFor);
+            }
+        }
+    }
+}
