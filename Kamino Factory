@@ -1,0 +1,87 @@
+package com.company;
+
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class Main {
+
+    static int sumOfArrayElements(int[] inputArray) {
+        int sum = 0;
+        for (int i = 0; i < inputArray.length; i++) {
+            sum += inputArray[i];
+        }
+        return sum;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int lengthOfDNA = Integer.parseInt(scanner.nextLine());
+
+        int longestSubsequenceOfOnes = 0;   /// Initially it is 0
+        int bestDNAStartingIndex = 0;       /// By default we will iterating from index 0
+        int bestDNANumber = 0;              /// Initially we set it to 0
+        int sumOfElementsInBestDNA = 0;     /// Initially we set it to 0
+        int[] uniqueDNA = new int[lengthOfDNA];
+
+        String input = scanner.nextLine();
+        for (int j = 0; !input.equals("Clone them!"); j++) {
+
+            int[] currentDNA = Arrays.stream(input.split("!+")).mapToInt(Integer::parseInt).toArray();
+
+            int currentSequenceOfOnes = 0; /// Initially we set it to 0
+
+            for (int i = 0; i < currentDNA.length; i++) {
+                if (currentDNA[i] == 1) {
+
+                    currentSequenceOfOnes++;
+
+                    if (currentSequenceOfOnes > longestSubsequenceOfOnes) {
+
+                        longestSubsequenceOfOnes = currentSequenceOfOnes;
+                        bestDNAStartingIndex = i - longestSubsequenceOfOnes + 1;    /// This what I came up with for calculating the start index
+                        bestDNANumber = j + 1;                                      /// We add one because the answers requires us to
+                        sumOfElementsInBestDNA = sumOfArrayElements(currentDNA);    /// We find the sum of the 'best' DNA by calling the function above
+                        uniqueDNA = currentDNA;                                     /// We copy the currentDNA to the uniqueDNA in order to preserve the numbers
+                    } //
+                    else if (currentSequenceOfOnes == longestSubsequenceOfOnes) {
+                        // In case the sequences of 1 are equal we have to check which is the leftmost
+
+                        int currentSequenceStartingIndex = i - currentSequenceOfOnes + 1; // Check the starting index of the current sequence
+                        if (currentSequenceStartingIndex < bestDNAStartingIndex) {
+                            // This is the new bestDNA
+                            bestDNAStartingIndex = currentSequenceStartingIndex;
+                            bestDNANumber = j + 1;                                      /// We add one because the answers requires us to
+                            sumOfElementsInBestDNA = sumOfArrayElements(currentDNA);    /// We find the sum of the 'best' DNA by calling the function above
+                            uniqueDNA = currentDNA;                                     /// We copy the currentDNA to the uniqueDNA in order to preserve the numbers
+                        } //
+                        else if (currentSequenceStartingIndex == bestDNAStartingIndex) {
+                            /// In case the starting indexes are same
+
+                            /// We check sum of elements in each array
+                            if (sumOfElementsInBestDNA < sumOfArrayElements(currentDNA)) {
+                                bestDNANumber = j + 1;
+                                sumOfElementsInBestDNA = sumOfArrayElements(currentDNA);
+                                uniqueDNA = currentDNA;
+                            }
+                        }
+                    }
+                } else {
+                    currentSequenceOfOnes = 0;  /// Make it 0 and will increase once there is a sequence of 1
+                }
+            }
+            input = scanner.nextLine();         /// Read the next line
+        }
+        if (bestDNANumber == 0) {
+            // If the inputs consist only of zeros
+            bestDNANumber = 1; // We set the DNA number to 1 as when all inputs are made up of zero bestDNANumber is considered to be the first met
+            // The reason is there no other input with greater sequence of 1, there is no input with leftmost starting index as all inputs are equal and made up of zeros.
+            // Also there is no input with sum greater than 0 as all inputs are made up of zeros.
+        }
+        System.out.println("Best DNA sample " + bestDNANumber + " with sum: " + sumOfElementsInBestDNA + "."); /// Print result
+        for (int number : uniqueDNA) {
+            /// Print DNA
+            System.out.print(number + " ");
+        }
+    }
+}
