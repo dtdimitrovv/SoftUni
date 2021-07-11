@@ -1,0 +1,29 @@
+package com.company;
+
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class Main {
+
+    static boolean isTopInteger(int[] array, int element, int elementIndex) {
+        for (int i = elementIndex + 1; i < array.length; i++) {
+            // We start iterating once index after the elements index
+            if (element <= array[i]) {
+                return false; // Not a top integer as there is something greater than the current element
+            }
+        }
+        return true; // If there is nothing greater than the element the function will return true
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int[] array = Arrays.stream(scanner.nextLine().split(" ")).mapToInt(e -> Integer.parseInt(e)).toArray(); // Read the array
+
+        for (int i = 0; i < array.length; i++) {
+            if (isTopInteger(array, array[i], i)) {
+                System.out.print(array[i] + " ");
+            }
+        }
+    }
+}
