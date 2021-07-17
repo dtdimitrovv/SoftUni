@@ -1,0 +1,30 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        TreeSet<String> guests = new TreeSet<>(); // A treeSet will allow us to sort the people who haven't come starting with the VIPs whole first letter is a number and we know numbers are before letters
+
+        String command; // Create a variable to read commands during the whole program
+
+        // Read the guests
+        while (!"PARTY".equals(command = scanner.nextLine())) {
+            guests.add(command);
+        }
+
+        // Party is on and guests start coming. We have to remove the one who has come from the list of guests
+        while (!"END".equals(command = scanner.nextLine())) {
+            guests.remove(command);
+        }
+
+        System.out.println(guests.size());
+        // Print the guests who haven't come
+        for (String guest : guests) {
+            System.out.println(guest);
+        }
+    }
+}
