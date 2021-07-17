@@ -1,0 +1,56 @@
+package com.company;
+
+import java.io.PrintStream;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // We will use LinkedHashMap as we need to print the info in the order of first appearance
+        LinkedHashMap<String, LinkedHashMap<String, List<String>>> continents = new LinkedHashMap<>();
+        // We will save the name of the store in the name of the continent. In the LinkedHashMap<String, Double> we will save the country and its cities
+
+        int n = Integer.parseInt(scanner.nextLine());
+
+        for (int i = 0; i < n; i++) {
+            String[] tokes = scanner.nextLine().split("\\s+");
+
+            String continent = tokes[0];
+            String country = tokes[1];
+            String city = tokes[2];
+
+            continents.putIfAbsent(continent, new LinkedHashMap<>());
+
+            LinkedHashMap<String, List<String>> countryAndCities = continents.get(continent);
+
+            countryAndCities.putIfAbsent(country, new LinkedList<>());
+
+            // Get the list of cities
+            List<String> cities = countryAndCities.get(country);
+
+            // Add the current city
+            cities.add(city);
+
+            // Update the linkedHashMap
+            countryAndCities.put(country, cities);
+
+            // Update the main map
+            continents.put(continent, countryAndCities);
+        }
+
+        // Print the information
+        for (Map.Entry<String, LinkedHashMap<String, List<String>>> entry : continents.entrySet()) {
+            System.out.println(entry.getKey() + ":");
+            printLinkedHashMap(entry.getValue());
+        }
+    }
+
+    static void printLinkedHashMap(LinkedHashMap<String, List<String>> map) {
+        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+            System.out.println("    " + entry.getKey() + " -> " + String.join(", ", entry.getValue()));
+        }
+    }
+}
