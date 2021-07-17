@@ -1,0 +1,40 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        LinkedHashSet<String> parkingLot = new LinkedHashSet<>();
+
+        String command;
+        while (!"END".equals(command = scanner.nextLine())) {
+            String[] tokens = command.split(",\\s+");
+
+            String carNumber = tokens[1];
+
+            // Check if the car enter the parking lot
+            if (tokens[0].equals("IN")) {
+                parkingLot.add(carNumber);
+            }
+            // In all other cases the car will exit the parking lot
+            else {
+                // Check if the parking lot is not empty
+                if (!parkingLot.isEmpty()) {
+                    parkingLot.remove(carNumber);
+                }
+            }
+        }
+
+        // Check if the parking lot is empty
+        if (parkingLot.isEmpty()) {
+            System.out.println("Parking Lot is Empty");
+        } else {
+            for (String carNumber : parkingLot) {
+                System.out.println(carNumber);
+            }
+        }
+    }
+}
