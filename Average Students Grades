@@ -1,0 +1,48 @@
+package com.company;
+
+import java.io.PrintStream;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int numberOfStudents = Integer.parseInt(scanner.nextLine());
+
+        TreeMap<String, List<Double>> students = new TreeMap<>(); // Create a map to sort the students by name automatically
+
+        for (int i = 0; i < numberOfStudents; i++) {
+            String[] currentStudentInfo = scanner.nextLine().split("\\s+");
+
+            students.putIfAbsent(currentStudentInfo[0], new ArrayList<>());
+
+            List<Double> currentMarks = students.get(currentStudentInfo[0]);
+
+            currentMarks.add(Double.parseDouble(currentStudentInfo[1]));
+
+            students.put(currentStudentInfo[0], currentMarks);
+        }
+
+        for (Map.Entry<String, List<Double>> entry : students.entrySet()) {
+            System.out.printf("%s -> %s(avg: %.2f)%n", entry.getKey(), printList(entry.getValue()), countAverageOfMarks(entry.getValue()));
+        }
+    }
+
+    static String printList(List<Double> list) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            builder.append(String.format("%.2f ",list.get(i)));
+        }
+        return builder.toString();
+    }
+
+    static double countAverageOfMarks(List<Double> marks) {
+        double average = 0;
+        for (int i = 0; i < marks.size(); i++) {
+            average += marks.get(i);
+        }
+        return average / marks.size();
+    }
+}
