@@ -1,0 +1,44 @@
+package com.company;
+
+import java.io.PrintStream;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // We use treeMap as the output must be ordered by shop name
+        TreeMap<String, LinkedHashMap<String, Double>> products = new TreeMap<>();
+        // We will save the name of the store in the first string. In the LinkedHashMap<String, Double> we will save the product and its price
+
+        String command;
+        while (!"Revision".equals(command = scanner.nextLine())) {
+            String[] tokes = command.split(",\\s+");
+
+            String storeName = tokes[0];
+            String product = tokes[1];
+            double price = Double.parseDouble(tokes[2]);
+
+            products.putIfAbsent(storeName, new LinkedHashMap<>());
+
+            LinkedHashMap<String, Double> currentProductInfo = products.get(storeName);
+            currentProductInfo.put(product, price);
+
+            products.put(storeName, currentProductInfo);
+        }
+
+        // Print the information
+        for (Map.Entry<String, LinkedHashMap<String, Double>> entry : products.entrySet()) {
+            System.out.println(entry.getKey() + "->");
+            printLinkedHashMap(entry.getValue());
+        }
+    }
+
+    static void printLinkedHashMap(LinkedHashMap<String, Double> map) {
+        for (Map.Entry<String, Double> entry : map.entrySet()) {
+            System.out.printf("Product: %s, Price: %.1f%n", entry.getKey(), entry.getValue());
+        }
+    }
+}
