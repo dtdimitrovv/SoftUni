@@ -1,0 +1,34 @@
+package com.company;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        LinkedHashMap<String, String> emails = new LinkedHashMap<>();
+
+        String name;
+        while (!"stop".equals(name = scanner.nextLine())) {
+            String email = scanner.nextLine();
+
+            Pattern pattern = Pattern.compile("[a-zA-Z]+(\\W|\\w)?[a-zA-Z]+@([a-zA-Z]+).(?<ending>[a-zA-Z]+)");
+            Matcher matcher = pattern.matcher(email);
+
+            while (matcher.find()) {
+                String ending = matcher.group("ending").toLowerCase(Locale.ROOT);
+                if (!ending.equals("us") && !ending.equals("uk") && !ending.equals("com")) {
+                    emails.putIfAbsent(name, email);
+                }
+            }
+
+        }
+
+        for (Map.Entry<String, String> entry : emails.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        }
+    }
+}
