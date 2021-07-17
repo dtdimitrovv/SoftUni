@@ -1,0 +1,53 @@
+package com.company;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // The first way to read a set from the console
+        LinkedHashSet<Integer> firstDeck = Arrays.stream(scanner.nextLine().split("\\s+"))
+                .mapToInt(Integer::parseInt) // mapToInt returns an IntStream. This is a primitive stream as when we say mapToInt we say to INT not INTEGER which means it is automatically primitive
+                .boxed() // Make it from primitive INT to Integer
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        // Second way to read a set from the console
+        LinkedHashSet<Integer> secondDeck = Arrays.stream(scanner.nextLine().split("\\s+"))
+                .map(Integer::parseInt) // Instead of mapToInt use only map as it doesn't know to what the object is mapped. It only uses the function Integer::parseInt
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        int rounds = 50;
+        while (rounds-- > 0) {
+            // We can use iterators to go through each element as we don't have indexes
+
+            int firstDeckTopElement = firstDeck.iterator().next();
+            firstDeck.remove(firstDeckTopElement);
+
+            int secondDeckTopElement = secondDeck.iterator().next();
+            secondDeck.remove(secondDeckTopElement);
+
+            if (firstDeckTopElement > secondDeckTopElement) {
+                firstDeck.add(firstDeckTopElement);
+                firstDeck.add(secondDeckTopElement);
+            } else if (firstDeckTopElement < secondDeckTopElement) {
+                secondDeck.add(firstDeckTopElement);
+                secondDeck.add(secondDeckTopElement);
+            }
+
+            if (firstDeck.isEmpty() || secondDeck.isEmpty()) {
+                break;
+            }
+        }
+
+        if (firstDeck.size() > secondDeck.size()) {
+            System.out.println("First player win!");
+        } else if (firstDeck.size() < secondDeck.size()) {
+            System.out.println("Second player win!");
+        } else {
+            System.out.println("Draw!");
+        }
+    }
+}
