@@ -1,0 +1,76 @@
+package com.company;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Pattern pattern = Pattern.compile("IP=(?<IP>(\\w+[.:])+\\w+) message='(?<message>(([\\w]+&?)+)?([\\w]+(\\W+)?)?)' user=(?<user>\\w+)");
+
+        // We will use a TreeMap as usernames must be sorted alphabetically while their IP addresses should be displayed in the order of their first appearance (that is why we use LinkedHashMap)
+        TreeMap<String, LinkedHashMap<String, Integer>> users = new TreeMap<>();
+
+        String command;
+        while (!"end".equals(command = scanner.nextLine())) {
+
+            Matcher matcher = pattern.matcher(command);
+
+            String currentIP = "";
+            String currentUser = "";
+
+            while (matcher.find()) {
+                currentIP = matcher.group("IP");
+                currentUser = matcher.group("user");
+            }
+
+            // Put the user in the map if it is absent
+            users.putIfAbsent(currentUser, new LinkedHashMap<>());
+
+            // Get the LinkedHashMap
+            LinkedHashMap<String, Integer> currentUserMap = users.get(currentUser);
+
+            // Put the IP in case it is absent
+            currentUserMap.putIfAbsent(currentIP, 0); // Initially it will be 0 as in the next line we will increase it
+
+            // Update the 'currentUserMap' by increasing the times the IP is met
+            currentUserMap.put(currentIP, currentUserMap.get(currentIP) + 1);
+
+            // Update the users map which is the main map
+            users.put(currentUser, currentUserMap);
+        }
+
+        // Print the result
+        for (Map.Entry<String, LinkedHashMap<String, Integer>> entry : users.entrySet()) {
+            System.out.println(entry.getKey() + ":");
+            printLinkedHashMap(entry.getValue());
+        }
+    }
+
+    static void printLinkedHashMap(LinkedHashMap<String, Integer> map) {
+
+        List<String> output = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            String currentLine = entry.getKey() + " => " + entry.getValue() + ",";
+            output.add(currentLine);
+        }
+
+        // Get the last line of the output and change the comma (',') to dot ('.')
+        String lastLine = output.get(output.size() - 1);
+        lastLine = lastLine.substring(0, lastLine.length() - 1) + ".";
+
+        // Update the last line in the output list
+        output.set(output.size() - 1, lastLine);
+
+        // Print the output
+        for (String line : output) {
+            System.out.print(line + " ");
+        }
+        System.out.println(); // Print new line
+    }
+
+}
