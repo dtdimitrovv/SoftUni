@@ -1,0 +1,165 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    static class Dragon {
+        private String name;
+        private int damage;
+        private int health;
+        private int armor;
+
+        public Dragon(String name, int damage, int health, int armor) {
+            this.name = name;
+            this.damage = damage;
+            this.health = health;
+            this.armor = armor;
+        }
+
+        public void setDamage(int damage) {
+            this.damage = damage;
+        }
+
+        public void setHealth(int health) {
+            this.health = health;
+        }
+
+        public void setArmor(int armor) {
+            this.armor = armor;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getDamage() {
+            return damage;
+        }
+
+        public int getHealth() {
+            return health;
+        }
+
+        public int getArmor() {
+            return armor;
+        }
+
+        public int sortByNameAlphabetically(Dragon currentDragon) {
+            return this.getName().compareTo(currentDragon.getName());
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        LinkedHashMap<String, List<Dragon>> dragons = new LinkedHashMap<>();
+
+        int numberOfLines = Integer.parseInt(scanner.nextLine());
+
+        while (numberOfLines-- > 0) {
+            String[] tokens = scanner.nextLine().split("\\s+");
+
+            String type = tokens[0];
+            String newDragonName = tokens[1];
+            int newDragonDamage = 0;
+            int newDragonHealth = 0;
+            int newDragonArmor = 0;
+
+            // Check if the damage is null
+            if (tokens[2].equals("null")) {
+                newDragonDamage = 45;
+            } else {
+                newDragonDamage = Integer.parseInt(tokens[2]);
+            }
+
+            // Check if the health is null
+            if (tokens[3].equals("null")) {
+                newDragonHealth = 250;
+            } else {
+                newDragonHealth = Integer.parseInt(tokens[3]);
+            }
+
+            // Check if the armor is null
+            if (tokens[4].equals("null")) {
+                newDragonArmor = 10;
+            } else {
+                newDragonArmor = Integer.parseInt(tokens[4]);
+            }
+
+            // Put the current type in case it is absent
+            dragons.putIfAbsent(type, new ArrayList<>());
+
+            // Get the list of dragons of each type
+            List<Dragon> dragonsOfCurrentType = dragons.get(type);
+
+            boolean dragonIsPresent = false;
+
+            // Check if the current dragon is present in the list
+            for (int i = 0; i < dragonsOfCurrentType.size(); i++) {
+                Dragon currentDragon = dragonsOfCurrentType.get(i);
+
+                // If we enter this 'if' condition it means we have to overwrite the information for the particular dragon
+                if (currentDragon.getName().equals(newDragonName)) {
+
+                    // Update the dragons stats
+                    currentDragon.setDamage(newDragonDamage);
+                    currentDragon.setHealth(newDragonHealth);
+                    currentDragon.setArmor(newDragonArmor);
+
+                    // Update the list
+                    dragonsOfCurrentType.set(i, currentDragon);
+
+                    dragonIsPresent = true;
+                    break; // Exit the loop as we have found a dragon and have overwritten its information
+                }
+            }
+
+            // If the dragon is not present add it to the list
+            if (!dragonIsPresent) {
+                dragonsOfCurrentType.add(new Dragon(newDragonName, newDragonDamage, newDragonHealth, newDragonArmor));
+            }
+
+            // Update the map
+            dragons.put(type, dragonsOfCurrentType);
+        }
+
+        for (Map.Entry<String, List<Dragon>> entry : dragons.entrySet()) {
+            System.out.printf("%s::(%.2f/%.2f/%.2f)\n", entry.getKey(), countAverageDamage(entry.getValue()), countAverageHealth(entry.getValue()), countAverageArmor(entry.getValue()));
+
+            Collections.sort(entry.getValue(), Dragon::sortByNameAlphabetically);
+
+            printListOfDragons(entry.getValue());
+        }
+    }
+
+    private static void printListOfDragons(List<Dragon> dragonList) {
+        for (Dragon dragon : dragonList) {
+            System.out.printf("-%s -> damage: %d, health: %d, armor: %d\n", dragon.getName(), dragon.getDamage(), dragon.getHealth(), dragon.getArmor());
+        }
+    }
+
+    private static double countAverageArmor(List<Dragon> dragonList) {
+        double sumOfArmors = 0;
+        for (Dragon dragon : dragonList) {
+            sumOfArmors += dragon.getArmor();
+        }
+        return sumOfArmors / dragonList.size();
+    }
+
+    private static double countAverageHealth(List<Dragon> dragonList) {
+        double sumOfHealth = 0;
+        for (Dragon dragon : dragonList) {
+            sumOfHealth += dragon.getHealth();
+        }
+        return sumOfHealth / dragonList.size();
+    }
+
+    private static double countAverageDamage(List<Dragon> dragonList) {
+        double sumOfDamage = 0;
+        for (Dragon dragon : dragonList) {
+            sumOfDamage += dragon.getDamage();
+        }
+        return sumOfDamage / dragonList.size();
+    }
+}
