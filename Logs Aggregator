@@ -1,0 +1,78 @@
+package com.company;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Pattern pattern = Pattern.compile("(?<IP>(\\w+\\.)+\\w+) (?<user>[a-zA-Z]+) (?<duration>[0-9]+)");
+
+        // Order the users alphabetically. Order the IPs alphabetically - that is why we use 2 TreeMaps - first for the users and second for the IP address
+        TreeMap<String, TreeMap<String, Integer>> users = new TreeMap<>();
+
+        int numberOfCommands = Integer.parseInt(scanner.nextLine());
+
+        while (numberOfCommands-- > 0) {
+
+            String command = scanner.nextLine(); // Read the command
+
+            // Create variable for the data from the command
+            String currentIP = "";
+            String currentUser = "";
+            int currentDuration = 0;
+
+            // Find the data in the command
+            Matcher matcher = pattern.matcher(command);
+
+            while (matcher.find()) {
+                currentIP = matcher.group("IP");
+                currentUser = matcher.group("user");
+                currentDuration = Integer.parseInt(matcher.group("duration"));
+            }
+
+            // Put the user in case they are not present
+            users.putIfAbsent(currentUser, new TreeMap<>());
+
+            // Get the TreeMap of each user
+            TreeMap<String, Integer> currentUserTreeMap = users.get(currentUser);
+
+            // Put the IP in case it is not present
+            currentUserTreeMap.putIfAbsent(currentIP, 0);
+
+            currentUserTreeMap.put(currentIP, currentUserTreeMap.get(currentIP) + currentDuration);
+
+            // Update the main map
+            users.put(currentUser, currentUserTreeMap);
+        }
+
+        for (Map.Entry<String, TreeMap<String, Integer>> entry : users.entrySet()) {
+            System.out.println(entry.getKey() + ": " + countWholeDuration(entry.getValue()) + " " + printTreeMap(entry.getValue()));
+        }
+    }
+
+    private static String printTreeMap(TreeMap<String, Integer> map) {
+
+        List<String> output = new ArrayList<>();
+
+        for (String currentLine : map.keySet()) {
+            output.add(currentLine);
+        }
+
+        return output.toString();
+    }
+
+    private static int countWholeDuration(TreeMap<String, Integer> map) {
+        int totalDuration = 0;
+
+        for (Integer value : map.values()) {
+            totalDuration += value;
+        }
+
+        return totalDuration;
+    }
+
+}
