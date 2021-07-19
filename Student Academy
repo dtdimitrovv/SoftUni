@@ -1,0 +1,41 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int n = Integer.parseInt(scanner.nextLine());
+
+        Map<String, List<Double>> students = new LinkedHashMap<>();
+
+        for (int i = 0; i < n; i++) {
+            String currentStudentName = scanner.nextLine();
+            double currentGrade = Double.parseDouble(scanner.nextLine());
+
+            // Check if the student is present
+            if (students.containsKey(currentStudentName)) {
+                // Add the grade to the his list of grades
+                students.get(currentStudentName).add(currentGrade);
+            } else {
+                List<Double> currentMarks = new ArrayList<>();
+                currentMarks.add(currentGrade);
+                students.put(currentStudentName, currentMarks); // Add the student to the list
+            }
+        }
+
+        for (Map.Entry<String, List<Double>> entry : students.entrySet()) {
+            double average = entry.getValue().stream().mapToDouble(x -> x).average().getAsDouble();
+            students.put(entry.getKey(), Collections.singletonList(average)); // Replace each element in the list with the average
+        }
+
+        students.entrySet().stream()
+                .filter(e -> e.getValue().get(0) >= 4.5)
+                .sorted((g1, g2) -> g2.getValue().get(0).compareTo(g1.getValue().get(0)))
+                .forEach(e -> {
+                    System.out.printf("%s -> %.2f%n", e.getKey(), e.getValue().get(0));
+                });
+    }
+}
