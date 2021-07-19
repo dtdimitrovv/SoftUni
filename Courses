@@ -1,0 +1,96 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static class Course {
+        private String courseName;
+        private int numberOfStudents;
+        private List<String> students = new ArrayList<>();
+
+        public String getCourseName() {
+            return courseName;
+        }
+
+        public void setCourseName(String courseName) {
+            this.courseName = courseName;
+        }
+
+        public int getNumberOfStudents() {
+            return numberOfStudents;
+        }
+
+        public void setNumberOfStudents(int numberOfStudents) {
+            this.numberOfStudents = numberOfStudents;
+        }
+
+        public List<String> getStudents() {
+            return students;
+        }
+
+        public void setStudent(String student) {
+            this.students.add(student);
+        }
+
+        public int sortByNumberOfStudentsInDecreasingOrder(Course currentCourse) {
+            int currentCourseNumberOfStudents = currentCourse.getNumberOfStudents();
+            return currentCourseNumberOfStudents - this.getNumberOfStudents();
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        String command = scanner.nextLine();
+
+        List<Course> courses = new ArrayList<>();
+
+        while (!command.equals("end")) {
+
+            String[] inputArray = command.split(":"); // Split the input into different parts so we can use them properly
+
+            String courseName = inputArray[0].trim();
+            String studentName = inputArray[1];
+
+            boolean courseExists = false; // We accept the course doesn't exist
+
+            // Check if the course exists
+            for (int i = 0; i < courses.size(); i++) {
+                if (courses.get(i).getCourseName().equals(courseName)) {
+                    courseExists = true;
+                    courses.get(i).setStudent(studentName); // Add the new student
+                    courses.get(i).setNumberOfStudents(courses.get(i).getNumberOfStudents() + 1); // Increase the number of students
+                }
+            }
+
+            // If the course doesn't exist we need to add it to the list of courses
+            if (!courseExists) {
+                Course newCourse = new Course();
+                newCourse.setCourseName(courseName);
+                newCourse.setStudent(studentName);
+                newCourse.setNumberOfStudents(1);
+                courses.add(newCourse);
+            }
+            command = scanner.nextLine(); // Read the next line
+        }
+
+        // Sort the courses by number of students in descending order
+        Collections.sort(courses, Course::sortByNumberOfStudentsInDecreasingOrder);
+
+        // Print the result
+        for (int i = 0; i < courses.size(); i++) {
+            printCourse(courses.get(i));
+        }
+    }
+
+    static void printCourse(Course currentCourse) {
+        System.out.println(currentCourse.getCourseName() + ": " + currentCourse.getNumberOfStudents());
+        
+        Collections.sort(currentCourse.getStudents()); // Sort the students by name in ascending order
+        
+        for (int i = 0; i < currentCourse.getStudents().size(); i++) {
+            System.out.println("--" + currentCourse.getStudents().get(i));
+        }
+    }
+}
