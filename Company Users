@@ -1,0 +1,48 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Map<String, List<String>> companiesAndUsers = new TreeMap<>();
+
+        String command = scanner.nextLine();
+
+        while (!command.equals("End")) {
+
+            String[] inputArray = command.split(" ->"); // Split the input into parts so we can use them properly
+
+            String companyName = inputArray[0];
+            String userID = inputArray[1];
+
+            // Check if the company is present
+            if (companiesAndUsers.containsKey(companyName)) {
+
+                // If the company is present, check if the user is not present in the company's list of users
+                if (!companiesAndUsers.get(companyName).contains(userID)) {
+                    companiesAndUsers.get(companyName).add(userID); // Add the user to the given company
+                }
+            }
+            // In all other cases the company won't be present
+            else {
+                List<String> usersList = new ArrayList<>();
+                usersList.add(userID);
+                companiesAndUsers.put(companyName, usersList);
+            }
+
+            command = scanner.nextLine(); // Read the next line
+        }
+
+        // Print the result
+        companiesAndUsers.entrySet()
+                .forEach(company -> {
+                    System.out.println(company.getKey());
+                    for (String user : company.getValue()) {
+                        System.out.println("--" + user);
+                    }
+                });
+    }
+}
