@@ -1,0 +1,27 @@
+package com.company;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        String input = scanner.nextLine();
+
+        Map<Character, Integer> occurrences = new LinkedHashMap<>(); // Store each character and the number of times it is met
+
+        for (int i = 0; i < input.length(); i++) {
+            if (input.charAt(i) != ' ') {
+                // If the character is different from space
+                occurrences.putIfAbsent(input.charAt(i), 0); // Insert the character if it is not present
+                occurrences.put(input.charAt(i), occurrences.get(input.charAt(i)) + 1); // Increase the times it is met accordingly
+            }
+        }
+
+        for (Map.Entry<Character, Integer> entry : occurrences.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        }
+    }
+}
