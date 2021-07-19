@@ -1,0 +1,113 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Map<String, Map<String, Integer>> examResults = new TreeMap<>();
+
+        Map<String, Integer> allStudents = new TreeMap<>();
+
+        String command;
+
+        while (!"exam finished".equals(command = scanner.nextLine())) {
+
+            String[] inputArray = command.split("-");
+
+            if (inputArray[1].equals("banned")) {
+
+                String bannedStudentName = inputArray[0];
+
+                // Find the student
+                for (Map.Entry<String, Map<String, Integer>> entry : examResults.entrySet()) {
+
+                    Map<String, Integer> currentMap = entry.getValue();
+
+                    // Search every map
+                    if (currentMap.containsKey(bannedStudentName)) {
+
+                        currentMap.put("Banned", 0); // Add banned which means there is a banned student
+
+                        // In this way we preserve his submissions in the total count of submissions for each language
+
+                        currentMap.remove(bannedStudentName); // Remove the student as we have indicated a banned student in the previous line
+
+                        allStudents.remove(bannedStudentName); // Remove the student from all students
+
+                        examResults.put(entry.getKey(), currentMap); // Update the main map
+                    }
+
+                }
+
+            } else {
+                String studentName = inputArray[0];
+                String language = inputArray[1];
+                int currentPoints = Integer.parseInt(inputArray[2]);
+
+                // The language is present
+                if (examResults.containsKey(language)) {
+                    // Check if the student exists
+
+                    // The student exists
+                    if (examResults.get(language).containsKey(studentName)) {
+
+                        // If the current points are higher than the one he has we have to update them
+                        if (examResults.get(language).get(studentName) < currentPoints) {
+
+                            examResults.get(language).put(studentName, currentPoints);
+
+                            allStudents.put(studentName, currentPoints);
+                        }
+                        Random rnd = new Random();
+
+                        examResults.get(language).put("Repeating Student" + rnd.nextInt(), currentPoints); // Add a new student so we can preserve the count of submissions
+                    }
+                    // The student doesn't exist
+                    else {
+                        // Add it
+                        examResults.get(language).put(studentName, currentPoints);
+
+                        allStudents.put(studentName, currentPoints); // Add the student to all students
+                    }
+                }
+
+                // The language is not present
+                else {
+                    Map<String, Integer> mapForCurrentStudent = new LinkedHashMap<>();
+                    mapForCurrentStudent.put(studentName, currentPoints);
+                    examResults.put(language, mapForCurrentStudent);
+
+                    allStudents.put(studentName, currentPoints); // Add the student to all students
+                }
+            }
+        }
+
+        // print result
+
+        System.out.println("Results:");
+
+        allStudents.entrySet().
+                stream().
+                sorted((student1, student2) -> student2.getValue().compareTo(student1.getValue()))
+                .forEach(student -> {
+                    if (!student.getKey().contains("Repeating Student")) {
+                        System.out.println(student.getKey() + " | " + student.getValue());
+                    }
+                });
+
+        System.out.println("Submissions:");
+
+        examResults.entrySet()
+                .stream().sorted((language1, language2) -> {
+            int result = language2.getValue().size() - language1.getValue().size();
+            if (result == 0) {
+                result = language1.getKey().compareTo(language2.getKey());
+            }
+            return result;
+        })
+                .forEach(e -> System.out.println(e.getKey() + " - " + e.getValue().size()));
+    }
+}
