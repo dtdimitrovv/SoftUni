@@ -1,0 +1,122 @@
+package com.company;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Map<String, Map<String, Integer>> contests = new LinkedHashMap<>();
+        Map<String, Integer> individualStatistics = new TreeMap<>();
+
+        String command;
+
+        while (!"no more time".equals(command = scanner.nextLine())) {
+
+            String[] inputArray = command.split("\\s+->\\s+");
+
+            String studentName = inputArray[0];
+            String contestName = inputArray[1];
+            int points = Integer.parseInt(inputArray[2]);
+
+            // If the contest is present
+            if (contests.containsKey(contestName)) {
+
+                // Check if the student is present
+                Map<String, Integer> currentContestRecords = contests.get(contestName);
+
+                boolean studentIsPresent = false;
+
+                for (Map.Entry<String, Integer> currentStudent : currentContestRecords.entrySet()) {
+
+                    // The student is present
+                    if (currentStudent.getKey().equals(studentName)) {
+
+                        studentIsPresent = true;
+
+                        // Check if the current points are greater than the ones he has now
+                        if (currentStudent.getValue() < points) {
+
+                            // Update the points with the higher ones
+                            currentContestRecords.put(studentName, points);
+                            individualStatistics.put(studentName, points); // Sum the points of every student
+                            // Update the map
+                            contests.put(contestName, currentContestRecords);
+                        }
+                    }
+                }
+                if (!studentIsPresent) {
+                    // Add them to the map of students
+                    contests.get(contestName).put(studentName, points);
+
+                    if (individualStatistics.containsKey(studentName)) {
+                        individualStatistics.put(studentName, individualStatistics.get(studentName) + points); // Sum the points of every student
+                    } else {
+                        individualStatistics.put(studentName, points);
+                    }
+                }
+
+            }
+
+            // The contest is not present
+            else {
+                Map<String, Integer> newStudentRecords = new TreeMap<>();
+                newStudentRecords.put(studentName, points);
+                contests.put(contestName, newStudentRecords);
+
+                if (individualStatistics.containsKey(studentName)) {
+                    individualStatistics.put(studentName, individualStatistics.get(studentName) + points); // Sum the points of every student
+                } else {
+                    individualStatistics.put(studentName, points);
+                }
+            }
+        }
+
+        contests.entrySet()
+                .stream()
+//                .sorted((a, b) -> {
+//                    int res = b.getValue().size() - a.getValue().size();
+////                    if (res == 0) {
+////
+////                    }
+//                    return res;
+//                })
+                .forEach(e -> {
+                    System.out.println(e.getKey() + ": " + e.getValue().size() + " participants");
+
+                    AtomicInteger count = new AtomicInteger(1);
+
+                    e.getValue().entrySet().stream().sorted((a, b) -> {
+                        int result = b.getValue().compareTo(a.getValue());
+                        if (result == 0) {
+                            result = a.getKey().compareTo(b.getKey());
+                        }
+                        return result;
+                    })
+                            .forEach(element -> {
+                                System.out.println(count + ". " + element.getKey() + " <::> " + element.getValue());
+                                count.getAndIncrement();
+                            });
+                });
+
+        System.out.println("Individual standings:");
+
+        AtomicInteger count = new AtomicInteger(1);
+
+        individualStatistics.entrySet().stream().sorted((a, b) -> {
+            int result = b.getValue().compareTo(a.getValue());
+            if (result == 0) {
+                result = a.getKey().compareTo(b.getKey());
+            }
+            return result;
+        })
+                .forEach(e -> {
+
+                    System.out.println(count + ". " + e.getKey() + " -> " + e.getValue());
+                    count.getAndIncrement();
+                });
+    }
+
+}
