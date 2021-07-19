@@ -1,0 +1,69 @@
+package com.company;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Pattern pattern = Pattern.compile("(?<singer>[\\w ]+) @(?<venue>[\\w ]+) (?<ticketsPrice>[0-9]+) (?<ticketsCount>[0-9]+)");
+
+        LinkedHashMap<String, LinkedHashMap<String, Integer>> venues = new LinkedHashMap<>();
+
+        String command;
+        while (!"End".equals(command = scanner.nextLine())) {
+
+            String singer = "";
+            String venue = "";
+            int ticketsPrice = 0;
+            int ticketsCount = 0;
+
+            Matcher matcher = pattern.matcher(command);
+
+            while (matcher.find()) {
+                singer = matcher.group("singer");
+                venue = matcher.group("venue");
+                ticketsPrice = Integer.parseInt(matcher.group("ticketsPrice"));
+                ticketsCount = Integer.parseInt(matcher.group("ticketsCount"));
+            }
+//            System.out.println(singer);
+//            System.out.println(venue);
+//            System.out.println(ticketsPrice);
+//            System.out.println(ticketsCount);
+//            System.out.println();
+            // If we enter this 'if' condition it means the input in correct and we have extracted all the necessary info
+            if (!singer.isEmpty() && !venue.isEmpty() && ticketsPrice != 0 && ticketsCount != 0) {
+
+                // Put the venue in case it is absent
+                venues.putIfAbsent(venue, new LinkedHashMap<>());
+
+                // Get the LinkedHashMap of each venue
+                LinkedHashMap<String, Integer> currentVenueMap = venues.get(venue);
+
+                // Put the singer if they are absent
+                currentVenueMap.putIfAbsent(singer, 0);
+
+                // Update the money the singer has made
+                currentVenueMap.put(singer, currentVenueMap.get(singer) + ticketsCount * ticketsPrice);
+
+                // Update the 'venues' map
+                venues.put(venue, currentVenueMap);
+            }
+        }
+
+        venues.entrySet()
+                .forEach(e -> {
+                    System.out.println(e.getKey());
+                    e.getValue().entrySet()
+                            .stream()
+                            .sorted((singer1, singer2) -> singer2.getValue().compareTo(singer1.getValue()))
+                            .forEach(pair -> {
+                                System.out.printf("#  %s -> %d\n", pair.getKey(), pair.getValue());
+                            });
+                });
+    }
+
+}
