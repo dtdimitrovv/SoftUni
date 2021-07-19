@@ -1,0 +1,139 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Map<String, Map<String, Integer>> students = new TreeMap<>();
+
+        Map<String, String> contests = new LinkedHashMap<>();
+
+        String command; // Create a variable to read the inputs
+
+        // Read the input lines in a faster way
+        while (!"end of contests".equals(command = scanner.nextLine())) {
+
+            String[] inputArray = command.split(":"); // Split the input so we can access information properly
+            String contestName = inputArray[0];
+            String contestPassword = inputArray[1];
+
+            contests.put(contestName, contestPassword); // Add the input to the map which stores info for contests
+        }
+
+        // Read the input lines in a faster way
+        while (!"end of submissions".equals(command = scanner.nextLine())) {
+
+            String[] inputArray = command.split("=>"); // Split the input so we can access information properly
+
+            String contestName = inputArray[0];
+            String contestPassword = inputArray[1];
+            String currentStudent = inputArray[2];
+            int points = Integer.parseInt(inputArray[3]);
+
+            boolean studentExists = false;
+
+            // Check if the contest is valid (if you received it in the first type of input)
+            // Check if the password is correct for the given contest
+            for (Map.Entry<String, String> currentContest : contests.entrySet()) {
+                if (currentContest.getKey().equals(contestName) && currentContest.getValue().equals(contestPassword)) {
+
+                    // Check if the person is already in the students map
+                    for (Map.Entry<String, Map<String, Integer>> currentStudentEntry : students.entrySet()) {
+
+                        // Check if the person exists
+                        if (currentStudentEntry.getKey().equals(currentStudent)) {
+
+                            studentExists = true;
+
+                            boolean contestExists = false;
+
+                            // Check if the contest and the points exist
+                            Map<String, Integer> currentStudentContests = currentStudentEntry.getValue();
+                            for (Map.Entry<String, Integer> currentStudentContestsAndPoints : currentStudentContests.entrySet()) {
+
+                                if (currentStudentContestsAndPoints.getKey().equals(contestName)) {
+
+                                    contestExists = true;
+
+                                    if (currentStudentContestsAndPoints.getValue() < points) {
+                                        // Update the points
+                                        currentStudentContests.put(contestName, points);
+
+                                        // Add the updated information to the map
+                                        students.put(currentStudent, currentStudentContests);
+                                    }
+                                }
+                            }
+
+                            if (!contestExists) {
+
+                                // Add the contest to the map of the particular student
+                                students.get(currentStudent).put(contestName, points);
+                            }
+                        }
+                    }
+                    if (!studentExists) {
+
+                        Map<String, Integer> currentContestAndPoints = new LinkedHashMap<>(); // Create a map to store the contest name and the points of the person
+                        currentContestAndPoints.put(contestName, points); // Add the data to the newly created map
+                        students.put(currentStudent, currentContestAndPoints); // Add the person to the map of students
+                    }
+                }
+            }
+
+        }
+
+        // find the person with max points
+        Map<String, Integer> bestStudent = findStudentWithMaxPoints(students);
+        bestStudent.forEach((key, value) -> System.out.println("Best candidate is " + key + " with total " + value + " points."));
+
+        System.out.println("Ranking: ");
+
+        students.entrySet()
+                .stream()
+                .forEach(pair -> {
+                    System.out.println(pair.getKey());
+                    pair.getValue().entrySet()
+                            .stream()
+                            .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
+                            .forEach(e -> System.out.println("#  " + e.getKey() + " -> " + e.getValue()));
+                });
+
+    }
+
+    static Map<String, Integer> findStudentWithMaxPoints(Map<String, Map<String, Integer>> students) {
+
+        Map<String, Integer> bestStudent = new LinkedHashMap<>();
+        int maxPoints = 0;
+        String bestStudentName = "";
+
+        for (Map.Entry<String, Map<String, Integer>> currentStudent : students.entrySet()) {
+
+            Map<String, Integer> currentStudentContestsAndPoints = currentStudent.getValue();
+
+            int sumOfPoints = 0;
+
+            for (Map.Entry<String, Integer> currentEntry : currentStudentContestsAndPoints.entrySet()) {
+                sumOfPoints += currentEntry.getValue();
+            }
+
+            if (sumOfPoints > maxPoints) {
+
+                // Delete the old best student
+                bestStudent.remove(bestStudentName);
+
+                bestStudentName = currentStudent.getKey(); // Take the name of the new winner
+                maxPoints = sumOfPoints;
+
+                // Add the person to the best student map
+                bestStudent.put(bestStudentName, maxPoints);
+
+            }
+        }
+
+        return bestStudent;
+    }
+}
