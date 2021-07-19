@@ -1,0 +1,50 @@
+package com.company;
+
+import javax.sound.sampled.Port;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int numberOfCommands = Integer.parseInt(scanner.nextLine());
+
+        Map<String, String> parkingLot = new LinkedHashMap<>();
+
+        for (int i = 0; i < numberOfCommands; i++) {
+            String[] input = scanner.nextLine().split("\\s+"); // Split the input into parts so we can use them properly
+
+            String currentName = input[1];
+
+            // Check if the input begins with 'register'
+            if (input[0].equals("register")) {
+
+                String currentLicensePlateNumber = input[2];
+
+                // Check if a user tries to register another license plate, using the same username
+                if (parkingLot.containsKey(currentName)) {
+                    System.out.println("ERROR: already registered with plate number " + parkingLot.get(currentName));
+                } else {
+                    System.out.println(currentName + " registered " + currentLicensePlateNumber + " successfully");
+                    parkingLot.put(currentName, currentLicensePlateNumber); // Add the new user to the parking lot database
+                }
+            }
+            // In all other cases it will begin with 'unregister'
+            else {
+
+                // Check if the user is present
+                if (parkingLot.containsKey(currentName)) {
+                    // Remove the user from the parking lot database
+                    System.out.println(currentName + " unregistered successfully");
+                    parkingLot.remove(currentName);
+                } else {
+                    System.out.println("ERROR: user " + currentName + " not found");
+                }
+            }
+        }
+
+        // Print the result
+        parkingLot.forEach((key, value) -> System.out.println(key + " => " + value));
+    }
+}
