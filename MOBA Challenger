@@ -1,0 +1,129 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Map<String, Map<String, Integer>> challengers = new LinkedHashMap<>();
+
+        String command;
+        while (!"Season end".equals(command = scanner.nextLine())) {
+
+            // Check if words are separated with '->' or with 'vs'
+            if (command.contains("->")) {
+
+                String[] inputArray = command.split("\\s+->\\s+");
+                String player = inputArray[0];
+                String position = inputArray[1];
+                int skillPoints = Integer.parseInt(inputArray[2]);
+
+                // Check if the player exists
+                if (challengers.containsKey(player)) {
+
+                    // Check if the position exists
+                    if (challengers.get(player).containsKey(position)) {
+
+                        // Check if the new points are greater than the current
+                        if (challengers.get(player).get(position) < skillPoints) {
+                            // Update the points
+                            challengers.get(player).put(position, skillPoints);
+                        }
+                    }
+                    // In all other cases the position won't exist
+                    else {
+                        // Add it to the map
+                        challengers.get(player).put(position, skillPoints);
+                    }
+                }
+                // In all other cases the player won't exist
+                else {
+                    Map<String, Integer> newPlayerMap = new LinkedHashMap<>();
+                    newPlayerMap.put(position, skillPoints);
+                    // Update the whole map
+                    challengers.put(player, newPlayerMap);
+                }
+            }
+            // In all other cases it will contain 'vs'
+            else {
+                String[] inputArray = command.split("\\s+vs\\s+");
+
+                String firstPlayer = inputArray[0];
+                String secondPlayer = inputArray[1];
+
+                // Check if both players exist
+                if (challengers.containsKey(firstPlayer) && challengers.containsKey(secondPlayer)) {
+
+                    // Compare the maps of both players
+                    Map<String, Integer> firstPlayerMap = challengers.get(firstPlayer);
+                    Map<String, Integer> secondPlayerMap = challengers.get(secondPlayer);
+
+                    boolean theWinnerIsReady = false;
+
+                    for (Map.Entry<String, Integer> firstPlayerEntry : firstPlayerMap.entrySet()) {
+
+                        for (Map.Entry<String, Integer> secondPlayerEntry : secondPlayerMap.entrySet()) {
+
+                            // Check if they have position in common
+                            if (firstPlayerEntry.getKey().equals(secondPlayerEntry.getKey())) {
+
+                                // Check the skill points
+                                if (firstPlayerEntry.getValue().equals(secondPlayerEntry.getValue())) {
+
+                                    theWinnerIsReady = true;
+                                    break; // Do nothing, just break as we don't need to iterate any more
+                                } else if (firstPlayerEntry.getValue() > secondPlayerEntry.getValue()) {
+
+                                    // Remove the second player
+                                    challengers.remove(secondPlayer);
+                                    theWinnerIsReady = true;
+                                    break; // We don't need to iterate any more
+                                } else {
+                                    // (firstPlayerEntry.getValue()<secondPlayerEntry.getValue())
+
+                                    // Remove the first player
+                                    challengers.remove(firstPlayer);
+                                    theWinnerIsReady = true;
+                                    break; // We don't need to iterate any more
+                                }
+                            }
+                        }
+                        if (theWinnerIsReady) {
+                            break;
+                        }
+                    }
+                }
+                // In all other cases we do nothing
+            }
+        }
+
+        // Print the result
+        challengers.entrySet()
+                .stream()
+                .sorted((a, b) -> { // Compare the players by points and then by name
+                    int sumFirst = a.getValue().values().stream().mapToInt(i -> i).sum();
+                    int sumSecond = b.getValue().values().stream().mapToInt(i -> i).sum();
+
+                    int result = sumSecond - sumFirst;
+                    if (result == 0) {
+                        result = a.getKey().compareTo(b.getKey());
+                    }
+                    return result;
+                })
+                .forEach(e -> {
+                    int sumOfPoints = e.getValue().values().stream().mapToInt(i -> i).sum();
+                    System.out.println(e.getKey() + ": " + sumOfPoints + " skill");
+
+                    e.getValue().entrySet().stream().sorted((a, b) -> {
+                        int result = b.getValue().compareTo(a.getValue());
+                        if (result == 0) {
+                            result = a.getKey().compareTo(b.getKey());
+                        }
+                        return result;
+                    })
+                            .forEach(person -> System.out.println("- " + person.getKey() + " <::> " + person.getValue()));
+                });
+    }
+}
