@@ -1,0 +1,86 @@
+package com.company;
+
+import javax.sound.sampled.Port;
+import java.util.*;
+
+public class Main {
+
+    public static class Product {
+        private String name;
+        private double price;
+        private int quantity;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public void setPrice(double price) {
+            this.price = price;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public void setQuantity(int quantity) {
+            this.quantity = quantity;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        List<Product> products = new ArrayList<>();
+
+        String command = scanner.nextLine();
+
+        while (!command.equals("buy")) {
+
+            String[] inputArray = command.split("\\s+"); // Split the input so we can use it properly
+
+            String currentName = inputArray[0];
+            double currentPrice = Double.parseDouble(inputArray[1]);
+            int currentQuantity = Integer.parseInt(inputArray[2]);
+
+            boolean foundElement = false;
+
+            // Check if the product exists
+            for (int i = 0; i < products.size(); i++) {
+                if (products.get(i).getName().equals(currentName)) {
+                    // This means the product is present
+                    // Increase the quantity
+                    products.get(i).setQuantity(products.get(i).getQuantity() + currentQuantity);
+
+                    // If the price is different change it
+                    if (products.get(i).getPrice() != currentPrice) {
+                        // Rewrite the old price
+                        products.get(i).setPrice(currentPrice);
+                    }
+                    foundElement = true;
+                    break; // Exit the loop as we have found the element
+                }
+            }
+
+            // If the element is not found
+            if(!foundElement){
+                Product currentProduct = new Product();
+                currentProduct.setName(currentName);
+                currentProduct.setPrice(currentPrice);
+                currentProduct.setQuantity(currentQuantity);
+                products.add(currentProduct); // Add the product to the list of products
+            }
+
+            command = scanner.nextLine(); // Read the next line
+        }
+        // Print the result
+        products.forEach(e -> System.out.printf("%s -> %.2f\n", e.getName(), e.getQuantity() * e.getPrice()));
+    }
+}
