@@ -1,0 +1,172 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static class ForceSide {
+        private String name;
+        private List<String> forceUsers = new ArrayList<>();
+        private int numberOfMembers;
+
+        public int getNumberOfMembers() {
+            return numberOfMembers;
+        }
+
+        public void setNumberOfMembers(int numberOfMembers) {
+            this.numberOfMembers = numberOfMembers;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public List<String> getForceUsers() {
+            return forceUsers;
+        }
+
+        public void setForceUser(String forceUser) {
+            this.forceUsers.add(forceUser);
+        }
+
+        public int sortForceSideByNumberOfMembersInDecreasingOrder(ForceSide currentForceSide) {
+
+            // If the number of members is equal
+            if (currentForceSide.getNumberOfMembers() - this.getNumberOfMembers() == 0) {
+                return this.getName().compareTo(currentForceSide.getName());
+            }
+            return currentForceSide.getNumberOfMembers() - this.getNumberOfMembers();
+        }
+
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        String command = scanner.nextLine();
+
+        List<ForceSide> forceSides = new ArrayList<>();
+
+        while (!command.equals("Lumpawaroo")) {
+
+            // Check if the input contains '|'
+            if (command.contains("|")) {
+
+                String[] inputArray = command.split("\\s+\\|\\s+"); // Split the input so we can use it properly
+
+                String currentForceSide = inputArray[0].trim();
+                String newUser = inputArray[1].trim();
+
+                // Find the index of the current force side
+                int indexOfCurrentForceSide = -1;
+
+                for (ForceSide forceSide : forceSides) {
+                    if (forceSide.getName().equals(currentForceSide)) {
+                        List<String> currentForceSideMembers = forceSide.getForceUsers();
+                        for (int i = 0; i < currentForceSideMembers.size(); i++) {
+                            if (currentForceSideMembers.contains(newUser)) {
+                                indexOfCurrentForceSide = i;
+                                break;
+                            }
+                        }
+                        if (indexOfCurrentForceSide != -1) {
+                            break;
+                        }
+                    }
+
+                }
+
+                if (indexOfCurrentForceSide == -1) {
+                    // Add it to the list of force sides
+                    ForceSide newForceSide = new ForceSide();
+                    newForceSide.setName(currentForceSide);
+                    newForceSide.setForceUser(newUser);
+                    newForceSide.setNumberOfMembers(1);
+
+                    forceSides.add(newForceSide);
+                }
+            }
+
+            // In all other case it will be '->'
+            else {
+
+                String[] inputArray = command.split("\\s+->\\s+"); // Split the input so we can use it properly
+
+                String newUser = inputArray[0].trim();
+                String currentForceSide = inputArray[1].trim();
+
+                boolean forceSideIsPresent = false;
+
+                // Check if such force side exists
+                for (int i = 0; i < forceSides.size(); i++) {
+                    if (forceSides.get(i).getName().equals(currentForceSide)) {
+                        forceSideIsPresent = true;
+                        break; // Exit the loop as we don't need to iterate
+                    }
+                }
+
+                // If the force side is present
+                if (forceSideIsPresent) {
+
+                    // Find the user that will change force sides and remove them from their current force side
+                    for (int i = 0; i < forceSides.size(); i++) {
+                        if (forceSides.get(i).getForceUsers().contains(newUser)) {
+
+                            // Remove the person from the list of members
+                            forceSides.get(i).getForceUsers().remove(newUser);
+
+                            // Decrease the number of members
+                            forceSides.get(i).setNumberOfMembers(forceSides.get(i).getNumberOfMembers() - 1);
+                        }
+                    }
+
+                    // Add the user to the new force side
+                    for (int i = 0; i < forceSides.size(); i++) {
+                        if (forceSides.get(i).getName().equals(currentForceSide)) {
+
+                            forceSides.get(i).setForceUser(newUser);
+
+                            // Increase the number of members
+                            forceSides.get(i).setNumberOfMembers(forceSides.get(i).getNumberOfMembers() + 1);
+                        }
+                    }
+
+                } else {
+                    // Add it to the list of force sides
+                    ForceSide newForceSide = new ForceSide();
+                    newForceSide.setName(currentForceSide);
+                    newForceSide.setForceUser(newUser);
+                    newForceSide.setNumberOfMembers(1);
+
+                    forceSides.add(newForceSide);
+
+                }
+                System.out.println(newUser + " joins the " + currentForceSide + " side!");
+            }
+
+            command = scanner.nextLine(); // Read the next line
+        }
+
+        Collections.sort(forceSides, ForceSide::sortForceSideByNumberOfMembersInDecreasingOrder);
+
+        for (ForceSide currentForceSide : forceSides) {
+
+            // Print only if the list of members is not empty
+            if (!currentForceSide.getForceUsers().isEmpty()) {
+                System.out.println("Side: " + currentForceSide.getName() + ", Members: " + currentForceSide.getNumberOfMembers());
+
+                // Sort the list of members alphabetically
+                currentForceSide.getForceUsers().sort(Comparator.comparing(String::toString));
+
+                // Print it
+                for (String currentMember : currentForceSide.getForceUsers()) {
+                    System.out.println("! " + currentMember);
+                }
+            }
+        }
+    }
+}
