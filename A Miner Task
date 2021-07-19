@@ -1,0 +1,30 @@
+package com.company;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+
+        Map<String, Integer> materials = new LinkedHashMap<>(); // Store unique resource and its quantity
+
+        String material = scanner.nextLine();
+        while (!material.equals("stop")) {
+
+            int quantity = Integer.parseInt(scanner.nextLine()); // Read the quantity
+
+            materials.putIfAbsent(material, 0);
+            materials.put(material, materials.get(material) + quantity); // Change the quantity accordingly
+
+            material = scanner.nextLine(); // Read the material
+        }
+
+        // Print the result
+        for (Map.Entry<String, Integer> entry : materials.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        }
+    }
+}
