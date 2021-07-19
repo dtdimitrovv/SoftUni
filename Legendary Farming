@@ -1,0 +1,129 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Map<String, Integer> uniqueMaterials = new LinkedHashMap<>(); // Store unique resources and their quantity
+        Map<String, Integer> garbageMaterials = new LinkedHashMap<>(); // Store garbage resources and their quantity
+
+        // Add the unique items with 0 quantity in case they are not added by the user
+        uniqueMaterials.put("shards", 0);
+        uniqueMaterials.put("fragments", 0);
+        uniqueMaterials.put("motes", 0);
+
+        String inputLine= scanner.nextLine();
+        while(true){
+
+            String[] input = inputLine.split("\\s+"); // Separate the input and split it so we can use it properly
+
+            for (int i = 1; i < input.length; i+=2) {
+
+                input[i] = input[i].toLowerCase(); // Change each word to lower case
+            }
+
+            boolean found = false; // It will indicate whether or not one legendary element has reached 250
+
+            for (int i = 0; i < input.length - 1; i += 2) {
+                // If 'i' is an even number we read quantity
+                // Else we read material
+
+                int quantity = Integer.parseInt(input[i]);
+                String material = input[i + 1];
+
+                // Add the elements to the map and change their quantity accordingly
+//            uniqueMaterials.putIfAbsent(material, 0);
+//            uniqueMaterials.put(material, uniqueMaterials.get(material) + quantity);
+
+                // Check if the material is 'shards'
+                if (material.equals("shards")) {
+
+                    // Add the element if it is not present and if it is update the quantity
+                    uniqueMaterials.putIfAbsent(material, 0);
+                    uniqueMaterials.put(material, uniqueMaterials.get(material) + quantity);
+
+                    // Check if the quantity is greater than 250
+                    if (uniqueMaterials.get("shards") >= 250) {
+                        System.out.println("Shadowmourne obtained!");
+
+                        // Decrease the material quantity
+                        uniqueMaterials.put(material, uniqueMaterials.get(material) - 250);
+                        found = true;
+                        break; // Exit the loop as we have reached out goal
+                    }
+
+                }
+
+                // Check if the material is 'fragments'
+                else if (material.equals("fragments")) {
+                    // Add the element if it is not present and if it is update the quantity
+                    uniqueMaterials.putIfAbsent(material, 0);
+                    uniqueMaterials.put(material, uniqueMaterials.get(material) + quantity);
+
+                    // Check if the quantity is greater than 250
+                    if (uniqueMaterials.get("fragments") >= 250) {
+                        System.out.println("Valanyr obtained!");
+
+                        // Decrease the material quantity
+                        uniqueMaterials.put(material, uniqueMaterials.get(material) - 250);
+                        found = true;
+                        break; // Exit the loop as we have reached out goal
+                    }
+                }
+
+                // Check if the material is 'motes'
+                else if (material.equals("motes")) {
+
+                    // Add the element if it is not present and if it is update the quantity
+                    uniqueMaterials.putIfAbsent(material, 0);
+                    uniqueMaterials.put(material, uniqueMaterials.get(material) + quantity);
+
+                    // Check if the quantity is greater than 250
+                    if (uniqueMaterials.get("motes") >= 250) {
+
+                        System.out.println("Dragonwrath obtained!");
+
+                        // Decrease the material quantity
+                        uniqueMaterials.put(material, uniqueMaterials.get(material) - 250);
+                        found = true;
+                        break; // Exit the loop as we have reached out goal
+                    }
+                }
+                // If it reaches this clause we have garbage
+                else {
+                    // Add the element if it is not present and if it is update the quantity
+                    garbageMaterials.putIfAbsent(material, 0);
+                    garbageMaterials.put(material, garbageMaterials.get(material) + quantity);
+                }
+
+            }
+
+            if(found){
+                break;
+            }
+            inputLine= scanner.nextLine(); // Read the next line
+        }
+
+        // Sort the unique materials in decreasing order by quantity and if it is equal by name in ascending order and print it
+        uniqueMaterials.entrySet()
+                .stream()
+                .sorted((e1, e2) -> {
+                    int result = e2.getValue().compareTo(e1.getValue());
+                    if (result == 0) {
+                        result = e1.getKey().compareTo(e2.getKey());
+                    }
+                    return result;
+                })
+                .forEach(e -> System.out.println(e.getKey() + ": " + e.getValue()));
+
+        // Sort the garbage materials alphabetically
+        garbageMaterials.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey()
+                )
+                .forEach(e -> System.out.println(e.getKey() + ": " + e.getValue()));
+    }
+}
