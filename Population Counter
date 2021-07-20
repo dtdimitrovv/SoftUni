@@ -1,0 +1,60 @@
+package com.company;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // In the first string we store the country and in the nested map - the city and its population
+        LinkedHashMap<String, LinkedHashMap<String, Long>> countries = new LinkedHashMap<>();
+
+        String command;
+        while (!"report".equals(command = scanner.nextLine())) {
+
+            String[] tokens = command.split("\\|"); // Split the command into proper way so we can use it info accordingly
+
+            String city = tokens[0];
+            String country = tokens[1];
+            long population = Long.parseLong(tokens[2]);
+
+            // Put the country if it is absent
+            countries.putIfAbsent(country, new LinkedHashMap<>());
+
+            // Get the map of each country
+            LinkedHashMap<String, Long> currentCountryMap = countries.get(country);
+
+            currentCountryMap.putIfAbsent(city, population);
+
+            // Update the 'countries' map
+            countries.put(country, currentCountryMap);
+        }
+
+        countries.entrySet()
+                .stream()
+                .sorted((a, b) -> (int) (countryWholePopulation(b.getValue()) - countryWholePopulation(a.getValue())))
+                .forEach(e -> {
+                    System.out.println(e.getKey() + " (total population: " + countryWholePopulation(e.getValue()) + ")");
+                    e.getValue().entrySet()
+                            .stream()
+                            .sorted((c, d) -> d.getValue().compareTo(c.getValue()))
+                            .forEach(pair -> {
+                                System.out.println("=>" + pair.getKey() + ": " + pair.getValue());
+                            });
+                });
+    }
+
+    static private long countryWholePopulation(LinkedHashMap<String, Long> countryMap) {
+
+        long sum = 0;
+
+        for (Long value : countryMap.values()) {
+            sum += value;
+        }
+        return sum;
+    }
+
+}
