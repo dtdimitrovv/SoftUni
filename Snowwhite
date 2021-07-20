@@ -1,0 +1,58 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // In the first map we will store the hat color and a map of dwarf for each hat. In the map of dwarfs there will be the name of the dwarf and its physics
+        LinkedHashMap<String, LinkedHashMap<String, Integer>> hats = new LinkedHashMap<>();
+
+        String command;
+        while (!"Once upon a time".equals(command = scanner.nextLine())) {
+
+            String[] inputArray = command.split("\\s+<:>\\s+");
+
+            String currentDwarfName = inputArray[0];
+            String currentHatColor = inputArray[1];
+            int currentPhysics = Integer.parseInt(inputArray[2]);
+
+            // Put the hat color in case it is absent
+            hats.putIfAbsent(currentHatColor, new LinkedHashMap<>());
+
+            // Get the list of dwarfs for each hat
+            LinkedHashMap<String, Integer> dwarvesForCurrentColor = hats.get(currentHatColor);
+
+            // Check if the 'dwarvesForCurrentColor' map contains the dwarf name
+            if (dwarvesForCurrentColor.containsKey(currentDwarfName)) {
+                
+                // If the dwarf is present, check if its current physics is smaller than the new one and if it is rewrite the physics
+                if (dwarvesForCurrentColor.get(currentDwarfName) < currentPhysics) {
+                    dwarvesForCurrentColor.put(currentDwarfName, currentPhysics);
+                }
+            } else {
+                // If it is not present, add it to the map
+                dwarvesForCurrentColor.put(currentDwarfName, currentPhysics);
+            }
+
+            // Update the main map
+            hats.put(currentHatColor, dwarvesForCurrentColor);
+        }
+
+        hats.entrySet().stream().sorted((dwarf1, dwarf2) -> {
+           
+            int result = Integer.compare(dwarf2.getValue().values().stream().mapToInt(i -> i).sum(),
+                    dwarf1.getValue().values().stream().mapToInt(i -> i).sum()); // Compare by the physics of each dwarf
+            if (result == 0) {
+                result = Integer.compare(dwarf2.getValue().size(), dwarf1.getValue().size()); // Compare the sizes of the nested maps as they show for each hat color the number of dwarfs wearing it
+            }
+            return result;
+        })
+                .forEach(entry -> {
+                    entry.getValue()
+                            .forEach((key, value) -> System.out.printf("(%s) %s <-> %d%n", entry.getKey(), key, value));
+                });
+    }
+}
