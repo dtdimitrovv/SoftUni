@@ -1,0 +1,28 @@
+package com.company;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Function<String, Integer> parseInt = Integer::parseInt;
+
+        final int number = parseInt.apply(scanner.nextLine());
+
+        List<String> collection = Arrays.stream(scanner.nextLine().split("\\s+")).collect(Collectors.toList());
+
+        Predicate<String> checkLength = str -> str.length() <= number;
+
+        for (String s : collection) {
+            if(checkLength.test(s)){
+                System.out.println(s);
+            }
+        }
+    }
+}
