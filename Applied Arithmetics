@@ -1,0 +1,35 @@
+package com.company;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Function<Integer, Integer> add = e -> e + 1;
+        Function<Integer, Integer> subtract = e -> e - 1;
+        Function<Integer, Integer> multiply = e -> e * 2;
+        Consumer<List<Integer>> print = list -> list.forEach(e -> System.out.print(e + " "));
+
+        List<Integer> arr = Arrays.stream(scanner.nextLine().split("\\s+")).map(Integer::parseInt).collect(Collectors.toList());
+
+        String command;
+        while (!"end".equals(command = scanner.nextLine())) {
+            if (command.equals("add")) {
+                arr = arr.stream().map(add).collect(Collectors.toList());
+            } else if (command.equals("subtract")) {
+                arr = arr.stream().map(subtract).collect(Collectors.toList());
+            } else if (command.equals("multiply")) {
+                arr = arr.stream().map(multiply).collect(Collectors.toList());
+            } else if (command.equals("print")) {
+                print.accept(arr);
+                System.out.println();
+            }
+        }
+
+    }
+}
