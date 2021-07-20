@@ -1,0 +1,23 @@
+package com.company;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Function<String, Integer> parseInt = Integer::parseInt;
+
+        List<Integer> collection = Arrays.stream(scanner.nextLine().split("\\s+")).map(parseInt).collect(Collectors.toList());
+
+        Collections.reverse(collection);
+
+        final int number = parseInt.apply(scanner.nextLine());
+
+        collection.stream().filter(e -> e % number != 0).forEach(e -> System.out.print(e + " "));
+    }
+}
