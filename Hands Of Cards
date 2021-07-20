@@ -1,0 +1,79 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        LinkedHashMap<String, Set<String>> players = new LinkedHashMap<>();
+
+        String command;
+        while (!"JOKER".equals(command = scanner.nextLine())) {
+
+            String[] nameAndCards = command.split(":"); // Get the name and the cards in one array because in case we have name which consists of 2 words we will be able to handle this
+
+            String[] tokens = nameAndCards[1].trim().split(",\\s+"); // Get each card individually as a string. Trim it to remove unnecessary space at the beginning of the string
+
+            String name = nameAndCards[0];
+
+            // Add the player if he is absent
+            players.putIfAbsent(name, new HashSet<>());
+
+            // Get the current player list of cards
+            Set<String> currentPlayerCards = players.get(name);
+
+            // Add the cards in the set in case they are unique
+            Collections.addAll(currentPlayerCards, tokens);
+
+            // Update the map
+            players.put(name, currentPlayerCards);
+        }
+
+        for (Map.Entry<String, Set<String>> entry : players.entrySet()) {
+            System.out.printf("%s: %d\n", entry.getKey(), calculateAllCardsPower(entry.getValue()));
+        }
+
+    }
+
+    private static int calculateAllCardsPower(Set<String> tokens) {
+        int wholePower = 0;
+
+        for (String currentToken : tokens) {
+
+            String powerOfCurrentCardString = currentToken.substring(0, currentToken.length() - 1);
+            String typeOfCurrentCardString = currentToken.substring(currentToken.length() - 1);
+
+            int powerOfCurrentCard = 0;
+            int typeOfCurrentCard = 0;
+
+            if (powerOfCurrentCardString.equals("J")) {
+                powerOfCurrentCard = 11;
+            } else if (powerOfCurrentCardString.equals("Q")) {
+                powerOfCurrentCard = 12;
+            } else if (powerOfCurrentCardString.equals("K")) {
+                powerOfCurrentCard = 13;
+            } else if (powerOfCurrentCardString.equals("A")) {
+                powerOfCurrentCard = 14;
+            } else {
+                powerOfCurrentCard = Integer.parseInt(powerOfCurrentCardString); // Make it a number
+            }
+
+            if (typeOfCurrentCardString.equals("C")) {
+                typeOfCurrentCard = 1;
+            } else if (typeOfCurrentCardString.equals("D")) {
+                typeOfCurrentCard = 2;
+            } else if (typeOfCurrentCardString.equals("H")) {
+                typeOfCurrentCard = 3;
+            } else if (typeOfCurrentCardString.equals("S")) {
+                typeOfCurrentCard = 4;
+            } else {
+                typeOfCurrentCard = Integer.parseInt(typeOfCurrentCardString); // Make it a number
+            }
+
+            wholePower += powerOfCurrentCard * typeOfCurrentCard;
+        }
+        return wholePower;
+    }
+}
