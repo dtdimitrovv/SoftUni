@@ -1,0 +1,46 @@
+package com.company;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Function<String, Integer> parseInt = Integer::parseInt;
+
+        int n = parseInt.apply(scanner.nextLine());
+
+        LinkedHashMap<String, Integer> people = new LinkedHashMap<>();
+
+        while (n-- > 0) {
+            String[] tokens = scanner.nextLine().split(",\\s+");
+
+            people.putIfAbsent(tokens[0], parseInt.apply(tokens[1]));
+        }
+
+        String ageCriteria = scanner.nextLine();
+        int age = parseInt.apply(scanner.nextLine());
+        String format = scanner.nextLine();
+
+        people.entrySet().stream().filter(getAgeFilter(age, ageCriteria)).forEach(getFormatter(format));
+    }
+
+    private static Predicate<Map.Entry<String, Integer>> getAgeFilter(int age, String ageCriteria) {
+        if (ageCriteria.equals("older")) {
+            return e -> e.getValue() >= age;
+        }
+        return e -> e.getValue() <= age;
+    }
+
+    private static Consumer<Map.Entry<String, Integer>> getFormatter(String format) {
+        if (format.equals("name")) {
+            return entry -> System.out.println(entry.getKey());
+        } else if (format.equals("age")) {
+            return entry -> System.out.println(entry.getValue());
+        }
+        return entry -> System.out.println(entry.getKey() + " - " + entry.getValue());
+    }
+}
