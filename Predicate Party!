@@ -1,0 +1,58 @@
+package com.company;
+
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        List<String> people = Arrays.stream(scanner.nextLine().split("\\s+")).collect(Collectors.toList());
+
+        BiPredicate<String[], String> check = (tokens, current) -> {
+
+            // Check if it starts with "StartsWith"
+
+            if (tokens[1].equals("StartsWith")) {
+                return current.startsWith(tokens[2]);
+            } else if (tokens[1].equals("EndsWith")) {
+                return current.endsWith(tokens[2]);
+            }
+            // In all other cases it will equal "Length"
+            else {
+                return current.length() == Integer.parseInt(tokens[2]);
+            }
+        };
+
+        String command;
+        while (!"Party!".equals(command = scanner.nextLine())) {
+            String[] tokens = command.split("\\s+"); // Read each command and split it so the info can be used properly
+
+            if (tokens[0].equals("Remove")) {
+                people = people.stream().filter(e -> !check.test(tokens, e)).collect(Collectors.toList());
+            } else if (tokens[0].equals("Double")) {
+
+                List<String>peopleToAdd= new ArrayList<>();
+
+                for (int i = 0; i < people.size(); i++) {
+                    String person = people.get(i);
+                    if (check.test(tokens, person)) {
+                        peopleToAdd.add(person);
+                    }
+                }
+
+                people.addAll(peopleToAdd);
+            }
+        }
+
+        if (people.isEmpty()) {
+            System.out.println("Nobody is going to the party!");
+        } else {
+            Collections.sort(people); // Sort the names in increasing order
+            System.out.println(String.join(", ", people) + " are going to the party!");
+        }
+    }
+
+}
