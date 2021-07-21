@@ -29,21 +29,14 @@ public class Main {
         String command;
         while (!"Party!".equals(command = scanner.nextLine())) {
             String[] tokens = command.split("\\s+"); // Read each command and split it so the info can be used properly
-
+            
             if (tokens[0].equals("Remove")) {
-                people = people.stream().filter(e -> !check.test(tokens, e)).collect(Collectors.toList());
+                people = people.stream().filter(e -> !check.test(tokens, e)).collect(Collectors.toList()); // We have to remove the people who don't match the conditions in the predicate as this will be removal in lambda function
             } else if (tokens[0].equals("Double")) {
-
-                List<String>peopleToAdd= new ArrayList<>();
-
-                for (int i = 0; i < people.size(); i++) {
-                    String person = people.get(i);
-                    if (check.test(tokens, person)) {
-                        peopleToAdd.add(person);
-                    }
-                }
-
-                people.addAll(peopleToAdd);
+                // Create a list for the people who match the criteria from the predicate
+                List<String> peopleToAdd = people.stream().filter(person->check.test(tokens,person)).collect(Collectors.toList());
+                // Add the people that match the criteria to the end of the original people list
+                people.addAll(peopleToAdd); 
             }
         }
 
