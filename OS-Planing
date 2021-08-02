@@ -1,0 +1,50 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        ArrayDeque<Integer> tasks = new ArrayDeque<>(); // Create a stack to store the tasks
+
+        int[] tasksInput = Arrays.stream(scanner.nextLine().split(",\\s+")).mapToInt(Integer::parseInt).toArray();
+
+        // Fill in the tasks in the stack
+        for (int task : tasksInput) {
+            tasks.push(task);
+        }
+
+        ArrayDeque<Integer> threads = new ArrayDeque<>(); // Create a queue to add the threads
+
+        int[] threadsInput = Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+
+        // Fill in the threads in the queue
+        for (int thread : threadsInput) {
+            threads.offer(thread);
+        }
+
+        // Get the task that we need to kill
+        int taskWeLookFor = Integer.parseInt(scanner.nextLine());
+
+        while (tasks.peek() != taskWeLookFor) {
+            // If the thread value is greater than or equal to the task value, the task and thread get removed
+            if (threads.peek() >= tasks.peek()) {
+                threads.poll();
+                tasks.pop();
+            }
+            // In all other cases the thread value is less than the task value, the thread gets removed, but the task remains.
+            else {
+                threads.poll();
+            }
+        }
+
+        System.out.printf("Thread with value %d killed task %d\n", threads.peek(), taskWeLookFor);
+
+        // Print the remaining threads starting from the first on a single line, separated by a single space.
+        while(!threads.isEmpty()){
+            System.out.print(threads.poll() + " ");
+        }
+    }
+}
