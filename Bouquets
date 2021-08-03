@@ -1,0 +1,59 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        ArrayDeque<Integer> daffodilsQueue = new ArrayDeque<>();
+        ArrayDeque<Integer> tulipsStack = new ArrayDeque<>();
+
+        // Read the tulips
+        int[] tulipsArray = Arrays.stream(scanner.nextLine().split(",\\s+")).mapToInt(Integer::parseInt).toArray();
+        // Fill in the stack
+        for (int j : tulipsArray) {
+            tulipsStack.push(j);
+        }
+
+        // Read the daffodils
+        int[] daffodilsArray = Arrays.stream(scanner.nextLine().split(",\\s+")).mapToInt(Integer::parseInt).toArray();
+        for (int i : daffodilsArray) {
+            // Fill in the queue
+            daffodilsQueue.add(i);
+        }
+
+        int numberOfBouquets = 0;
+
+        int sumOfLeftFlowers = 0;
+
+        while (!daffodilsQueue.isEmpty() && !tulipsStack.isEmpty()) {
+            int topOfDaffodils = daffodilsQueue.poll();
+            int topOfTulips = tulipsStack.pop();
+
+            if (topOfDaffodils + topOfTulips == 15) {
+                numberOfBouquets++;
+            } else if (topOfDaffodils + topOfTulips > 15) {
+                while ((topOfTulips + topOfDaffodils) >= 15) {
+                    topOfTulips -= 2;
+                }
+                if (topOfTulips + topOfDaffodils == 15) {
+                    numberOfBouquets++;
+                } else {
+                    sumOfLeftFlowers += topOfTulips + topOfDaffodils;
+                }
+            } else {
+                sumOfLeftFlowers += topOfTulips + topOfDaffodils;
+            }
+        }
+
+        numberOfBouquets += sumOfLeftFlowers / 15;
+
+        if (numberOfBouquets >= 5) {
+            System.out.printf("You made it! You go to the competition with %d bouquets!", numberOfBouquets);
+        } else {
+            System.out.printf("You failed... You need more %d bouquets.", 5 - numberOfBouquets);
+        }
+    }
+}
