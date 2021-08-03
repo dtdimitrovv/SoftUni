@@ -1,0 +1,143 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read the size of the field
+        int size = Integer.parseInt(scanner.nextLine());
+
+        // Receive the commands which represent the directions in which the python should move
+        String[] directions = scanner.nextLine().split(",");
+
+        // The game starts with a python length of 1
+        List<Integer> numberOfFoundBombs = new ArrayList<>(1);
+        numberOfFoundBombs.add(0);
+
+        // Read the field
+        char[][] field = readCharArray(scanner, size);
+
+        int[] playerPosition = findPlayerPosition(field);
+
+        int xPos = playerPosition[0];
+        int yPos = playerPosition[1];
+
+        for (String direction : directions) {
+            if (direction.equals("up")) {
+                if (isInRange(xPos - 1, yPos, field)) { // Check if we can go up
+                    xPos--;
+                    if (!move(field, xPos, yPos, numberOfFoundBombs)) {
+                        System.out.printf("END! %d bombs left on the field%n", findLeftBombs(field));
+                        return;
+                    }
+                }
+            }
+            //
+            else if (direction.equals("down")) {
+                // Check if we can go down
+                if (isInRange(xPos + 1, yPos, field)) {
+                    // Increase the position by 1
+                    xPos++;
+                    if (!move(field, xPos, yPos, numberOfFoundBombs)) {
+                        System.out.printf("END! %d bombs left on the field%n", findLeftBombs(field));
+                        return;
+                    }
+                }
+            }
+            //
+            else if (direction.equals("left")) {
+                // Check if we can go left
+                if (isInRange(xPos, yPos - 1, field)) {
+                    yPos--;
+                    if (!move(field, xPos, yPos, numberOfFoundBombs)) {
+                        System.out.printf("END! %d bombs left on the field%n", findLeftBombs(field));
+                        return;
+                    }
+                }
+            }
+            //
+            else if (direction.equals("right")) {
+                // Check if we can go right
+                if (isInRange(xPos, yPos + 1, field)) {
+                    yPos++;
+                    if (!move(field, xPos, yPos, numberOfFoundBombs)) {
+                        System.out.printf("END! %d bombs left on the field%n", findLeftBombs(field));
+                        return;
+                    }
+                }
+            }
+
+            if (findLeftBombs(field) == 0) {
+                break;
+            }
+        }
+
+        int numberOfLeftBombs = findLeftBombs(field);
+
+        if (numberOfLeftBombs == 0) {
+            System.out.println("Congratulations! You found all bombs!");
+        } else {
+            System.out.printf("%d bombs left on the field. Sapper position: (%d,%d)\n", numberOfLeftBombs, xPos, yPos);
+        }
+    }
+
+    private static boolean move(char[][] field, int xPos, int yPos, List<Integer> numberOfBombs) {
+
+        // Check if we have reached a bomb
+        if (field[xPos][yPos] == 'B') {
+            numberOfBombs.set(0, numberOfBombs.get(0) + 1); // Increase the number of found bombs
+            field[xPos][yPos] = '+'; // Make the bomb neutral
+            System.out.println("You found a bomb!");
+        }
+        // Check if we have reached end of the route
+        else if (field[xPos][yPos] == 'e') {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isInRange(int row, int col, char[][] field) {
+        return row >= 0 && row < field.length && col >= 0 && col < field[row].length;
+    }
+
+    private static int findLeftBombs(char[][] field) {
+        int leftBombs = 0;
+
+        for (char[] chars : field) {
+            for (char aChar : chars) {
+                if (aChar == 'B') {
+                    leftBombs++;
+                }
+            }
+        }
+        return leftBombs;
+    }
+
+    private static int[] findPlayerPosition(char[][] field) {
+        int[] positions = new int[2]; // We will store the row in positions[0] and column positions[1]
+
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field[i].length; j++) {
+                if (field[i][j] == 's') {
+                    positions[0] = i;
+                    positions[1] = j;
+                }
+            }
+        }
+        return positions;
+    }
+
+    private static char[][] readCharArray(Scanner scanner, int size) {
+
+        char[][] field = new char[size][size];
+
+        for (int i = 0; i < size; i++) {
+            field[i] = scanner.nextLine().replaceAll("\\s+", "").toCharArray();
+        }
+
+        return field;
+    }
+}
