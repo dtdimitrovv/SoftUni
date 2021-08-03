@@ -1,0 +1,52 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        ArrayDeque<Integer> firstBoxQueue = new ArrayDeque<>();
+        ArrayDeque<Integer> secondBoxStack = new ArrayDeque<>();
+
+        // Fill in the firstBox
+        int[] firstBox = Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+
+        for (int box : firstBox) {
+            firstBoxQueue.add(box);
+        }
+
+        // Fill in the second box
+        int[] secondBox = Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+
+        for (int box : secondBox) {
+            secondBoxStack.push(box);
+        }
+
+        int claimedItems = 0;
+
+        while (!firstBoxQueue.isEmpty() && !secondBoxStack.isEmpty()) {
+
+            if ((firstBoxQueue.peek() + secondBoxStack.peek()) % 2 == 0) {
+                claimedItems += firstBoxQueue.peek() + secondBoxStack.peek();
+                firstBoxQueue.pop();
+                secondBoxStack.pop();
+            } else {
+                firstBoxQueue.add(secondBoxStack.pop());
+            }
+        }
+
+        if(firstBoxQueue.isEmpty()){
+            System.out.println("First magic box is empty.");
+        }else{
+            System.out.println("Second magic box is empty.");
+        }
+
+        if(claimedItems>=90){
+            System.out.printf("Wow, your prey was epic! Value: %d",claimedItems);
+        }else{
+            System.out.printf("Poor prey... Value: %d",claimedItems);
+        }
+    }
+}
