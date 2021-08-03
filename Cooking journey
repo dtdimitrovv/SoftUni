@@ -1,0 +1,162 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read the size of the field
+        int size = Integer.parseInt(scanner.nextLine());
+
+        // Read the field
+        char[][] field = readCharArray(scanner, size);
+
+        List<Integer> collectedMoney = new ArrayList<>(1);
+        collectedMoney.add(0);
+
+        int[] personPosition = findPersonPosition(field);
+//
+//        int initialXPos = personPosition[0];
+//        int initialYPos = personPosition[1];
+
+        boolean isInRange = true;
+
+        while (isInRange && collectedMoney.get(0) < 50) {
+            String command = scanner.nextLine();
+
+            // Make the old place empty
+            field[personPosition[0]][personPosition[1]] = '-';
+
+            if (command.equals("up")) {
+                if (isInRange(personPosition[0] - 1, personPosition[1], field)) {
+                    // Update the positions array
+                    personPosition[0]--;
+
+                    // Move the person
+                    move(field, personPosition, collectedMoney);
+                } else {
+                    isInRange = false;
+                }
+            }
+            //
+            else if (command.equals("down")) {
+                if (isInRange(personPosition[0] + 1, personPosition[1], field)) {
+                    // Update the positions array
+                    personPosition[0]++;
+
+                    // Move the person
+                    move(field, personPosition, collectedMoney);
+                } else {
+                    isInRange = false;
+                }
+            }
+            //
+            else if (command.equals("left")) {
+                if (isInRange(personPosition[0], personPosition[1] - 1, field)) {
+                    // Update the positions array
+                    personPosition[1]--;
+
+                    // Move the person
+                    move(field, personPosition, collectedMoney);
+                } else {
+                    isInRange = false;
+                }
+            }
+            //
+            else if (command.equals("right")) {
+                if (isInRange(personPosition[0], personPosition[1] + 1, field)) {
+                    // Update the positions array
+                    personPosition[1]++;
+
+                    // Move the person
+                    move(field, personPosition, collectedMoney);
+                } else {
+                    isInRange = false;
+                }
+            }
+        }
+
+        if (!isInRange) {
+            System.out.println("Bad news! You are out of the pastry shop.");
+        } else if (collectedMoney.get(0) >= 50) {
+            System.out.println("Good news! You succeeded in collecting enough money!");
+        }
+        System.out.println("Money: " + collectedMoney.get(0));
+        printField(field);
+    }
+
+    private static void printField(char[][] field) {
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field[i].length; j++) {
+                System.out.print(field[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    private static void move(char[][] field, int[] personPosition, List<Integer> collectedMoney) {
+
+        int xPos = personPosition[0];
+        int yPos = personPosition[1];
+
+        // Check if we have reached a client
+        if (field[xPos][yPos] >= '0' && field[xPos][yPos] <= '9') {
+            collectedMoney.set(0, collectedMoney.get(0) + (field[xPos][yPos] - '0')); // Increase the money
+            field[xPos][yPos] = 'S'; // Show the field is taken by the person
+        }
+        // Check if we have reached a pillar
+        else if (field[xPos][yPos] == 'P') {
+            field[xPos][yPos] = '-'; // Make the field empty
+
+            // Change the person's position where the other pillar is
+            findOtherPillarAndChangePersonsPosition(field, personPosition);
+        } else {
+            field[xPos][yPos] = 'S'; // Show the field is taken by the person
+        }
+    }
+
+    private static void findOtherPillarAndChangePersonsPosition(char[][] field, int[] personPosition) {
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field[i].length; j++) {
+                if (field[i][j] == 'P') {
+                    if (i != personPosition[0] || j != personPosition[1]) {
+                        personPosition[0] = i;
+                        personPosition[1] = j;
+                        field[i][j] = 'S'; // Show the field is taken by the person
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean isInRange(int row, int col, char[][] field) {
+        return row >= 0 && row < field.length && col >= 0 && col < field[row].length;
+    }
+
+    private static int[] findPersonPosition(char[][] field) {
+        int[] positions = new int[2]; // We will store the row in positions[0] and column positions[1]
+
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field[i].length; j++) {
+                if (field[i][j] == 'S') {
+                    positions[0] = i;
+                    positions[1] = j;
+                }
+            }
+        }
+        return positions;
+    }
+
+    private static char[][] readCharArray(Scanner scanner, int size) {
+
+        char[][] field = new char[size][size];
+
+        for (int i = 0; i < size; i++) {
+            field[i] = scanner.nextLine().replaceAll("\\s+", "").toCharArray();
+        }
+
+        return field;
+    }
+}
