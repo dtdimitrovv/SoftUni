@@ -1,0 +1,188 @@
+package com.company;
+
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read the size of the field
+        int size = Integer.parseInt(scanner.nextLine());
+
+        // Receive the commands which represent the directions in which the python should move
+        String[] directions = scanner.nextLine().split(",\\s+");
+
+        // The game starts with a python length of 1
+        List<Integer> pythonLength = new ArrayList<>(1);
+        pythonLength.add(1);
+
+        // Read the field
+        char[][] field = readCharArray(scanner, size);
+
+        int[] pythonPositions = pythonPosition(field);
+
+        int xPos = pythonPositions[0];
+        int yPos = pythonPositions[1];
+
+        for (int i = 0; i < directions.length; i++) {
+            if (directions[i].equals("up")) {
+                if (isInRange(xPos - 1, yPos, field)) { // Check if we can go up
+
+                    xPos--;
+
+                    if (!move(field, xPos, yPos, pythonLength)) { // If this function returns false this means we have reached an enemy and we have to end the game
+                        System.out.println("You lose! Killed by an enemy!");
+                        return;
+                    }
+
+                } else { // Check if we can go down when we cannot go up
+                    if (isInRange(field.length - 1, yPos, field)) {
+
+                        xPos = field.length - 1;
+
+                        if (!move(field, xPos, yPos, pythonLength)) { // If this function returns false this means we have reached an enemy and we have to end the game
+                            System.out.println("You lose! Killed by an enemy!");
+                            return;
+                        }
+                    }
+                }
+            }
+            //
+            else if (directions[i].equals("down")) {
+                // Check if we can go down
+                if (isInRange(xPos + 1, yPos, field)) {
+
+                    // Increase the position by 1
+                    xPos++;
+
+                    if (!move(field, xPos, yPos, pythonLength)) { // If this function returns false this means we have reached an enemy and we have to end the game
+                        System.out.println("You lose! Killed by an enemy!");
+                        return;
+                    }
+                } else if (isInRange(0, yPos, field)) { // Check if we can go up when we cannot go down
+
+                    // Decrease the position by 1
+                    xPos = 0;
+
+                    if (!move(field, xPos, yPos, pythonLength)) { // If this function returns false this means we have reached an enemy and we have to end the game
+                        System.out.println("You lose! Killed by an enemy!");
+                        return;
+                    }
+
+                }
+            }
+            //
+            else if (directions[i].equals("left")) {
+                // Check if we can go left
+                if (isInRange(xPos, yPos - 1, field)) {
+
+                    yPos--;
+
+                    if (!move(field, xPos, yPos, pythonLength)) { // If this function returns false this means we have reached an enemy and we have to end the game
+                        System.out.println("You lose! Killed by an enemy!");
+                        return;
+                    }
+                } else if (isInRange(xPos, field.length - 1, field)) { // Check if we can go right when we cannot go left
+
+                    yPos = field.length - 1;
+
+                    if (!move(field, xPos, yPos, pythonLength)) { // If this function returns false this means we have reached an enemy and we have to end the game
+                        System.out.println("You lose! Killed by an enemy!");
+                        return;
+                    }
+                }
+            }
+            //
+            else if (directions[i].equals("right")) {
+                // Check if we can go right
+                if (isInRange(xPos, yPos + 1, field)) {
+
+                    yPos++;
+
+                    if (!move(field, xPos, yPos, pythonLength)) { // If this function returns false this means we have reached an enemy and we have to end the game
+                        System.out.println("You lose! Killed by an enemy!");
+                        return;
+                    }
+                } else if (isInRange(xPos, 0, field)) { // Check if we can go left when we cannot go right
+
+                    yPos = 0;
+
+                    if (!move(field, xPos, yPos, pythonLength)) { // If this function returns false this means we have reached an enemy and we have to end the game
+                        System.out.println("You lose! Killed by an enemy!");
+                        return;
+                    }
+                }
+            }
+            
+            if(leftFood(field)==0){
+                break;
+            }
+        }
+
+        int leftFood = leftFood(field);
+
+        if (leftFood == 0) {
+            System.out.println("You win! Final python length is " + pythonLength.get(0));
+        } else {
+            System.out.printf("You lose! There is still %d food to be eaten.", leftFood);
+        }
+    }
+
+    private static boolean move(char[][] field, int xPos, int yPos, List<Integer> pythonLength) {
+
+        // Check if we have reached food
+        if (field[xPos][yPos] == 'f') {
+            pythonLength.set(0, pythonLength.get(0) + 1); // Increase the length
+            field[xPos][yPos] = '*'; // Make the field an asterisk so it does nothing
+        }
+        // Check if we have reached an enemy
+        else if (field[xPos][yPos] == 'e') {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isInRange(int row, int col, char[][] field) {
+        return row >= 0 && row < field.length && col >= 0 && col < field[row].length;
+    }
+
+    private static int leftFood(char[][] field) {
+        int leftFood = 0;
+
+        for (char[] chars : field) {
+            for (char aChar : chars) {
+                if (aChar == 'f') {
+                    leftFood++;
+                }
+            }
+        }
+        return leftFood;
+    }
+
+    private static int[] pythonPosition(char[][] field) {
+        int[] positions = new int[2]; // We will store the row in positions[0] and column positions[1]
+
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field[i].length; j++) {
+                if (field[i][j] == 's') {
+                    positions[0] = i;
+                    positions[1] = j;
+                }
+            }
+        }
+
+        return positions;
+    }
+
+    private static char[][] readCharArray(Scanner scanner, int size) {
+
+        char[][] field = new char[size][size];
+
+        for (int i = 0; i < size; i++) {
+            field[i] = scanner.nextLine().replaceAll("\\s+", "").toCharArray();
+        }
+
+        return field;
+    }
+}
