@@ -1,0 +1,53 @@
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        String text = scanner.nextLine();
+
+        String command;
+        while (!"End".equals(command = scanner.nextLine())) {
+            String[] tokens = command.split("\\s+");
+
+            if (tokens[0].equals("Translate")) {
+                String charToReplace = tokens[1];
+                String replacement = tokens[2];
+                text = text.replaceAll(charToReplace, replacement);
+                System.out.println(text);
+            } else if (tokens[0].equals("Includes")) {
+                String stringToCheck = tokens[1];
+                if (text.contains(stringToCheck)) {
+                    System.out.println("True");
+                } else {
+                    System.out.println("False");
+                }
+            } else if (tokens[0].equals("Start")) {
+                String stringToStart = tokens[1];
+                if (text.startsWith(stringToStart)) {
+                    System.out.println("True");
+                } else {
+                    System.out.println("False");
+                }
+            } else if (tokens[0].equals("Lowercase")) {
+                text = text.toLowerCase();
+                System.out.println(text);
+            } else if (tokens[0].equals("FindIndex")) {
+                String charToFind = tokens[1];
+                System.out.println(text.lastIndexOf(charToFind));
+            } else if (tokens[0].equals("Remove")) {
+                StringBuilder newText = new StringBuilder(text);
+                int startIndex = Integer.parseInt(tokens[1]);
+                int count = Integer.parseInt(tokens[2]);
+
+                while (count-- > 0) {
+                    newText.deleteCharAt(startIndex);
+                }
+
+                text = newText.toString();
+
+                System.out.println(text);
+            }
+        }
+    }
+}
