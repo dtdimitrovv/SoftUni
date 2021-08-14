@@ -1,0 +1,35 @@
+import java.nio.file.Path;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        Pattern pattern = Pattern.compile("!(?<firstPart>[A-Z][a-z]{3,})!:\\[(?<secondPart>[a-zA-Z]{8,})\\]");
+
+        int n = Integer.parseInt(scanner.nextLine());
+
+        while (n-- > 0) {
+            Matcher matcher = pattern.matcher(scanner.nextLine());
+
+            if (matcher.find()) {
+                String firstPart = matcher.group("firstPart");
+                String secondPart = matcher.group("secondPart");
+
+                System.out.print(firstPart + ": ");
+
+                for (int i = 0; i < secondPart.length(); i++) {
+                    System.out.print((int) secondPart.charAt(i) + " ");
+                }
+
+                System.out.println();
+
+            } else {
+                System.out.println("The message is invalid");
+            }
+        }
+
+    }
+}
