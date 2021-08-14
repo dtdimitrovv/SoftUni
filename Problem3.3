@@ -1,0 +1,61 @@
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        LinkedHashMap<String, List<String>> likedMeals = new LinkedHashMap<>();
+
+        int unlikedMeals = 0;
+
+        String command;
+        while (!"Stop".equals(command = scanner.nextLine())) {
+            String[] tokens = command.split("-");
+
+            String guest = tokens[1];
+            String meal = tokens[2];
+
+            if (tokens[0].equals("Like")) {
+                likedMeals.putIfAbsent(guest, new ArrayList<>());
+
+                List<String> meals = likedMeals.get(guest);
+
+                if (!meals.contains(meal)) {
+                    meals.add(meal);
+                }
+                likedMeals.put(guest, meals);
+            } else if (tokens[0].equals("Unlike")) {
+                if (!likedMeals.containsKey(guest)) {
+                    System.out.println(guest + " is not at the party.");
+                    continue;
+                }
+                List<String> meals = likedMeals.get(guest);
+                if (meals.contains(meal)) {
+                    meals.remove(meal);
+                    System.out.printf("%s doesn't like the %s.\n", guest, meal);
+                    unlikedMeals++;
+                    //likedMeals.put(guest, meals);
+                } else {
+                    System.out.printf("%s doesn't have the %s in his/her collection.\n", guest, meal);
+                }
+            }
+        }
+
+        likedMeals.entrySet().stream().sorted((a, b) -> {
+            int result = Integer.compare(b.getValue().size(), a.getValue().size());
+            if (result == 0) {
+                result = a.getKey().compareTo(b.getKey());
+            }
+            return result;
+        }).forEach(e -> {
+            System.out.print(e.getKey() + ": ");
+            System.out.println(e.getValue().stream().map(String::toString).collect(Collectors.joining(", ")));
+        });
+
+        System.out.println("Unliked meals: " + unlikedMeals);
+    }
+}
