@@ -1,0 +1,122 @@
+class Story {
+    constructor(title, creator) {
+        this.title = title;
+        this.creator = creator;
+        this._comments = [];
+        this._likes = [];
+    }
+
+    get likes() {
+        if (this._likes.length == 0) {
+            return `${this.title} has 0 likes`;
+        }
+
+        if (this._likes.length == 1) {
+            return `${this._likes[0]} likes this story!`;
+        }
+
+        return `${this._likes[0]} and ${this._likes.length - 1} others like this story!`
+    }
+
+    like(username) {
+        // Check if the username is present
+        for (let i = 0; i < this._likes.length; i++) {
+            if (this._likes[i] == username) {
+                throw new Error(`You can't like the same story twice!`);
+            }
+        }
+
+        // Check if the user is the creator
+        if (username == this.creator) {
+            throw new Error(`You can't like your own story!`);
+        }
+
+        // Add the user to the list of likes
+        this._likes.push(username);
+
+        return `${username} liked ${this.title}!`;
+    }
+
+    dislike(username) {
+        // Check if the username is present
+        for (let i = 0; i < this._likes.length; i++) {
+            if (this._likes[i] == username) {
+
+                // Remove the person from the list of likes
+                this._likes.splice(i, 1);
+
+                return `${username} disliked ${this.title}`;
+            }
+        }
+        throw new Error(`You can't dislike this story!`);
+    }
+
+    comment(username, content, id) {
+        // Check if the id is present
+        for (let i = 0; i < this._comments.length; i++) {
+            if (this._comments[i].id == id) {
+                // Create the new reply
+                let newReply = {
+                    id: `${i}.${this._comments[i].replies.length}`,
+                    username: username,
+                    content: content
+                }
+                this._comments[i].replies.push(newReply);
+                return 'You replied successfully';
+            }
+        }
+
+        let newCommentID = '';
+
+        if (id == undefined) {
+            newCommentID = this._comments.length+1;
+        } else {
+            newCommentID = id;
+        }
+
+        // Create a new comment
+        let newComment = {
+            id: newCommentID,
+            username,
+            content,
+            replies: []
+        };
+
+        this._comments.push(newComment);
+
+        return `${username} commented on ${this.title}`;
+    }
+
+    toString(sortingType) {
+        const sortVersion = {
+            asc: (a, b) => a.id - b.id,
+            desc: (a, b) => b.id - a.id,
+            username: (a, b) => a.username.localeCompare(b.username)
+        };
+
+        if (this._comments.length != 0) {
+            this._comments.sort(sortVersion[sortingType]);
+            this._comments.forEach(c => c.replies.sort(sortVersion[sortingType]));
+        }
+
+        let output = '';
+        output += `Title: ${this.title}` + '\n';
+        output += `Creator: ${this.creator}` + '\n';
+        output += `Likes: ${this._likes.length}` + '\n';
+        output += `Comments:` + '\n';
+
+        for (let i = 0; i < this._comments.length; i++) {
+            let c = this._comments[i];
+            output += `-- ${c.id}. ${c.username}: ${c.content}` + '\n'
+        }
+
+        for (let i = 0; i < this._comments.length; i++) {
+            let c = this._comments[i];
+            for (let j = 0; j < c.replies; j++) {
+                output += `--- ${c[j].id}. ${c[j].username}: ${c[j].content}` + '\n'
+            }
+        }
+
+        return output.trimEnd();
+    }
+}d
