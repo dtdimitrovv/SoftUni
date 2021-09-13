@@ -1,0 +1,128 @@
+class ArtGallery {
+    constructor(creator) {
+        this.creator = creator;
+        this.possibleArticles = {
+            "picture": 200,
+            "photo": 50,
+            "item": 250
+        };
+        this.listOfArticles = [];
+        this.guests = [];
+    }
+
+    addArticle(articleModel, articleName, quantity) {
+        // The articleModel must be toLowerCase()
+        articleModel = articleModel.toLowerCase();
+
+        let newArticle = {
+            articleModel,
+            articleName,
+            quantity
+        };
+
+        if (articleModel != 'picture' && articleModel != 'photo' && articleModel != 'item') {
+            throw new Error('This article model is not included in this gallery!');
+        } else {
+            let isPresent = false;
+            for (let i = 0; i < this.listOfArticles.length; i++) {
+                // If the articleName already exists in listOfArticles array and the articleModel is the same just add the new quantity to the old one
+                if (this.listOfArticles[i].articleModel == newArticle[articleModel] && this.listOfArticles[i].articleName == newArticle[articleName]) {
+                    this.listOfArticles[i].quantity += newArticle[quantity];
+                    isPresent = true;
+                }
+            }
+
+            // Otherwise, should add the articleModel, articleName, quantity to listOfArticles
+            if (!isPresent) {
+                this.listOfArticles.push(newArticle);
+            }
+
+            return `Successfully added article ${articleName} with a new quantity- ${quantity}.`
+        }
+    }
+
+    inviteGuest(guestName, personality) {
+        // Check if the guest name is present and if so throw Error
+        for (let i = 0; i < this.guests.length; i++) {
+            if (this.guests[i].guestName == guestName) {
+                throw new Error(`${guestName} has already been invited.`)
+            }
+        }
+
+        // Determine the points
+        let newGuestPoints = 0;
+        if (personality == 'Vip') {
+            newGuestPoints = 500;
+        } else if (personality == 'Middle') {
+            newGuestPoints = 250;
+        } else {
+            newGuestPoints = 50;
+        }
+
+        let newGuest = { guestName: guestName, points: newGuestPoints, purchaseArticle: 0 };
+        this.guests.push(newGuest);
+
+        return `You have successfully invited ${guestName}!`
+    }
+
+    buyArticle(articleModel, articleName, guestName) {
+        // Find the article
+        for (let i = 0; i < this.listOfArticles.length; i++) {
+            if (this.listOfArticles[i].articleName == articleName && this.listOfArticles[i].articleModel == articleModel) {
+                // Check If the quantity of the current article is equal to 0
+                if (this.listOfArticles[i].quantity <= 0) {
+                    return `The ${articleName} is not available.`;
+                }
+
+                // Check if the guestName is present in the guests array
+                for (let j = 0; j < this.guests.length; j++) {
+                    if (this.guests[j].guestName == guestName) {
+                        let articlePoint = Number(this.possibleArticles[this.listOfArticles[i].articleModel]);
+
+                        // Check if the guest has the required number of points to purchase the article
+                        if (this.guests[j].points >= articlePoint) {
+                            // Reduce the points
+                            this.guests[j].points -= articlePoint;
+
+                            // Reduce the quantity of the current article
+                            this.listOfArticles[i].quantity--;
+
+                            // Increase the number of purchases of the guest
+                            this.guests[j].purchaseArticle++;
+
+                            return `${guestName} successfully purchased the article worth ${articlePoint} points.`;
+                        } else {
+                            return 'You need to more points to purchase the article.';
+                        }
+
+                    }
+                }
+
+                throw new Error('This guest is not invited.');
+            }
+        }
+
+        throw new Error('This article is not found.');
+    }
+
+    showGalleryInfo(criteria) {
+        let output = '';
+        if (criteria == 'article') {
+            output += 'Articles information:' + '\n';
+            for (const article in this.listOfArticles) {
+                let articleModel = article[articleModel];
+                let articleName = article[articleName];
+                let quantity = article[quantity];
+                output += `${articleModel} - ${articleName} - ${quantity}` + '\n';
+            }
+        } else if (criteria == 'guest') {
+            output += 'Guests information:' + '\n';
+            for (const guest in this.guests) {
+                let guestName = guest[guestName];
+                let purchaseArticle = guest[purchaseArticle];
+                output += `${guestName} - ${purchaseArticle}` + '\n';
+            }
+        }
+        return output.trimEnd();
+    }
+}
