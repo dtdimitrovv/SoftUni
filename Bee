@@ -1,0 +1,200 @@
+import java.util.*;
+import java.util.regex.Pattern;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int size = Integer.parseInt(scanner.nextLine());
+
+        char[][] matrix = readMatrix(scanner, size);
+
+        int[] beePosition = findBeePosition(matrix);
+        int xPosition = beePosition[0];
+        int yPosition = beePosition[1];
+        int pollinatedFlowers = 0;
+        boolean outOfTerritory = false;
+
+        String moveCommand = scanner.nextLine();
+        while (!moveCommand.equals("End")) {
+
+            // Remove the old position of the bee and make it empty
+            matrix[xPosition][yPosition] = '.';
+
+            if (moveCommand.equals("up")) {
+                if (xPosition - 1 >= 0) {
+                    xPosition--;
+                } else {
+                    outOfTerritory = true;
+                    break;
+                }
+
+                // Check if we have stumbled on a flower
+                if (matrix[xPosition][yPosition] == 'f') {
+                    // Increase the number of pollinated flowers
+                    pollinatedFlowers++;
+
+                    // Make the pollinated flower and empty space
+                    matrix[xPosition][yPosition] = '.';
+                }
+
+                // Check if we have stumbled on a bonus
+                else if (matrix[xPosition][yPosition] == 'O') {
+                    // Make the bonus disappear
+                    matrix[xPosition][yPosition] = '.';
+
+                    // Move one step forward
+                    if (xPosition - 1 >= 0) {
+                        xPosition--;
+                    } else {
+                        outOfTerritory = true;
+                        break;
+                    }
+                }
+            }
+            //
+            else if (moveCommand.equals("down")) {
+                if (xPosition + 1 < matrix.length) {
+                    xPosition++;
+                } else {
+                    outOfTerritory = true;
+                    break;
+                }
+
+                // Check if we have stumbled on a flower
+                if (matrix[xPosition][yPosition] == 'f') {
+                    // Increase the number of pollinated flowers
+                    pollinatedFlowers++;
+
+                    // Make the pollinated flower and empty space
+                    matrix[xPosition][yPosition] = '.';
+                }
+
+                // Check if we have stumbled on a bonus
+                else if (matrix[xPosition][yPosition] == 'O') {
+                    // Make the bonus disappear
+                    matrix[xPosition][yPosition] = '.';
+
+                    // Move one step forward
+                    if (xPosition + 1 < matrix.length) {
+                        xPosition++;
+                    } else {
+                        outOfTerritory = true;
+                        break;
+                    }
+                }
+            }
+            //
+            else if (moveCommand.equals("left")) {
+                if (yPosition - 1 >= 0) {
+                    yPosition--;
+                } else {
+                    outOfTerritory = true;
+                    break;
+                }
+
+                // Check if we have stumbled on a flower
+                if (matrix[xPosition][yPosition] == 'f') {
+                    // Increase the number of pollinated flowers
+                    pollinatedFlowers++;
+
+                    // Make the pollinated flower and empty space
+                    matrix[xPosition][yPosition] = '.';
+                }
+
+                // Check if we have stumbled on a bonus
+                else if (matrix[xPosition][yPosition] == 'O') {
+                    // Make the bonus disappear
+                    matrix[xPosition][yPosition] = '.';
+
+                    if (yPosition - 1 >= 0) {
+                        yPosition--;
+                    } else {
+                        outOfTerritory = true;
+                        break;
+                    }
+                }
+            }
+            //
+            else if (moveCommand.equals("right")) {
+                if (yPosition + 1 < matrix[yPosition].length) {
+                    yPosition++;
+                } else {
+                    outOfTerritory = true;
+                    break;
+                }
+
+                // Check if we have stumbled on a flower
+                if (matrix[xPosition][yPosition] == 'f') {
+                    // Increase the number of pollinated flowers
+                    pollinatedFlowers++;
+
+                    // Make the pollinated flower and empty space
+                    matrix[xPosition][yPosition] = '.';
+                }
+
+                // Check if we have stumbled on a bonus
+                else if (matrix[xPosition][yPosition] == 'O') {
+                    // Make the bonus disappear
+                    matrix[xPosition][yPosition] = '.';
+
+                    if (yPosition + 1 < matrix[yPosition].length) {
+                        yPosition++;
+                    } else {
+                        outOfTerritory = true;
+                        break;
+                    }
+                }
+            }
+
+            // Mark the current position of the bee
+            matrix[xPosition][yPosition] = 'B';
+
+            // Read the next command
+            moveCommand = scanner.nextLine();
+        }
+
+        if (outOfTerritory) {
+            System.out.println("The bee got lost!");
+        }
+
+        if (pollinatedFlowers >= 5) {
+            System.out.printf("Great job, the bee manage to pollinate %d flowers!\n", pollinatedFlowers);
+        } else {
+            System.out.printf("The bee couldn't pollinate the flowers, she needed %d flowers more\n", 5 - pollinatedFlowers);
+        }
+
+        printMatrix(matrix);
+    }
+
+    static void printMatrix(char[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                System.out.print(matrix[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    static int[] findBeePosition(char matrix[][]) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] == 'B') {
+                    int[] result = new int[2];
+                    result[0] = i;
+                    result[1] = j;
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    static char[][] readMatrix(Scanner scanner, int rows) {
+        char[][] matrix = new char[rows][];
+        for (int i = 0; i < rows; i++) {
+            matrix[i] = scanner.nextLine().toCharArray();
+        }
+        return matrix;
+    }
+}
