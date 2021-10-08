@@ -1,0 +1,151 @@
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int size = Integer.parseInt(scanner.nextLine());
+        int commands = Integer.parseInt(scanner.nextLine());
+
+        char[][] matrix = readMatrix(scanner, size);
+        int[] playerPosition = findPlayerPosition(matrix);
+        int xPosition = playerPosition[0];
+        int yPosition = playerPosition[1];
+
+        while (commands-- > 0) {
+            // Clear the old player's position
+            matrix[xPosition][yPosition] = '.';
+
+            // Read the command
+            String command = scanner.nextLine();
+
+            // Check
+            if (command.equals("up")) {
+                xPosition = goUp(xPosition, size);
+
+                // Check if ww have reached a bonus
+                if (matrix[xPosition][yPosition] == 'B') {
+                    xPosition = goUp(xPosition, size);
+                }
+                // Check if ww have reached a trap
+                else if (matrix[xPosition][yPosition] == 'T') {
+                    xPosition = goDown(xPosition, size);
+                }
+            } else if (command.equals("down")) {
+                xPosition = goDown(xPosition, size);
+
+                // Check if ww have reached a bonus
+                if (matrix[xPosition][yPosition] == 'B') {
+                    xPosition = goDown(xPosition, size);
+                }
+                // Check if ww have reached a trap
+                else if (matrix[xPosition][yPosition] == 'T') {
+                    xPosition = goUp(xPosition, size);
+                }
+            } else if (command.equals("left")) {
+                yPosition = goLeft(yPosition, matrix[yPosition].length);
+
+                // Check if we have reached a bonus
+                if (matrix[xPosition][yPosition] == 'B') {
+                    yPosition = goLeft(yPosition, matrix[yPosition].length);
+                }
+                // Check if we have reached a trap
+                else if (matrix[xPosition][yPosition] == 'T') {
+                    yPosition = goRight(yPosition, matrix[yPosition].length);
+                }
+            } else if (command.equals("right")) {
+                yPosition = goRight(yPosition, matrix[yPosition].length);
+
+                // Check if we have reached a bonus
+                if (matrix[xPosition][yPosition] == 'B') {
+                    yPosition = goRight(yPosition, matrix[yPosition].length);
+                }
+                // Check if we have reached a trap
+                else if (matrix[xPosition][yPosition] == 'T') {
+                    yPosition = goLeft(yPosition, matrix[yPosition].length);
+                }
+            }
+
+            // Check if we have reached the finish
+            if (matrix[xPosition][yPosition] == 'F') {
+                matrix[xPosition][yPosition] = 'P'; // You must replace the "F" with the "P"
+                System.out.println("Well done, the player won first place!");
+                printMatrix(matrix);
+                return; // Exit the program
+            } else {
+                matrix[xPosition][yPosition] = 'P'; // Set the new player's position
+            }
+        }
+
+        System.out.println("Oh no, the player got lost on the track!");
+        printMatrix(matrix);
+    }
+
+    static void printMatrix(char matrix[][]) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                System.out.print(matrix[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    static int goRight(int yPosition, int length) {
+        if (yPosition + 1 < length) {
+            yPosition++;
+        } else {
+            yPosition = 0;
+        }
+        return yPosition;
+    }
+
+    static int goLeft(int yPosition, int length) {
+        if (yPosition - 1 >= 0) {
+            yPosition--;
+        } else {
+            yPosition = length - 1;
+        }
+        return yPosition;
+    }
+
+    static int goUp(int xPosition, int matrixSize) {
+        if (xPosition - 1 >= 0) {
+            xPosition--;
+        } else {
+            xPosition = matrixSize - 1;
+        }
+        return xPosition;
+    }
+
+    static int goDown(int xPosition, int size) {
+        if (xPosition + 1 < size) {
+            xPosition++;
+        } else {
+            xPosition = 0;
+        }
+        return xPosition;
+    }
+
+    static int[] findPlayerPosition(char[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] == 'P') {
+                    int[] result = new int[2];
+                    result[0] = i;
+                    result[1] = j;
+                    return result;
+                }
+            }
+        }
+        // We won't reach this line as the player mark is guaranteed
+        return null;
+    }
+
+    static char[][] readMatrix(Scanner scanner, int size) {
+        char[][] matrix = new char[size][];
+        for (int i = 0; i < size; i++) {
+            matrix[i] = scanner.nextLine().toCharArray();
+        }
+        return matrix;
+    }
+}
