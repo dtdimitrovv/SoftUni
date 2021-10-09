@@ -1,0 +1,73 @@
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int[] bombEffectsInput = Arrays.stream(scanner.nextLine().split(",\\s+")).mapToInt(Integer::parseInt).toArray();
+        int[] bombCasingsInput = Arrays.stream(scanner.nextLine().split(",\\s+")).mapToInt(Integer::parseInt).toArray();
+
+        ArrayDeque<Integer> bombEffectsQueue = new ArrayDeque<>();
+        ArrayDeque<Integer> bombCasingsStack = new ArrayDeque<>();
+
+        // Fill in the queue
+        for (int i : bombEffectsInput) {
+            bombEffectsQueue.offer(i);
+        }
+
+        // Fill in the stack
+        for (int i : bombCasingsInput) {
+            bombCasingsStack.push(i);
+        }
+
+        int cherryBombsCount = 0;
+        int daturaBombsCount = 0;
+        int smokeDecoyBombsCount = 0;
+
+        while (!bombEffectsQueue.isEmpty() && !bombCasingsStack.isEmpty()) {
+            int sum = bombCasingsStack.peek() + bombEffectsQueue.peek();
+            if (sum == 40) {
+                daturaBombsCount++;
+                bombCasingsStack.pop();
+                bombEffectsQueue.poll();
+            } else if (sum == 60) {
+                cherryBombsCount++;
+                bombCasingsStack.pop();
+                bombEffectsQueue.poll();
+            } else if (sum == 120) {
+                smokeDecoyBombsCount++;
+                bombCasingsStack.pop();
+                bombEffectsQueue.poll();
+            } else {
+                bombCasingsStack.push(bombCasingsStack.pop() - 5);
+            }
+
+            if (cherryBombsCount >= 3 && daturaBombsCount >= 3 && smokeDecoyBombsCount >= 3) {
+                break;
+            }
+        }
+
+        if (cherryBombsCount >= 3 && daturaBombsCount >= 3 && smokeDecoyBombsCount >= 3) {
+            System.out.println("Bene! You have successfully filled the bomb pouch!");
+        } else {
+            System.out.println("You don't have enough materials to fill the bomb pouch.");
+        }
+
+        if (bombEffectsQueue.isEmpty()) {
+            System.out.println("Bomb Effects: empty");
+        } else {
+            System.out.println("Bomb Effects: " + bombEffectsQueue.stream().map(String::valueOf).collect(Collectors.joining(", ")));
+        }
+
+        if (bombCasingsStack.isEmpty()) {
+            System.out.println("Bomb Casings: empty");
+        } else {
+            System.out.println("Bomb Casings: " + bombCasingsStack.stream().map(String::valueOf).collect(Collectors.joining(", ")));
+        }
+
+        System.out.println("Cherry Bombs: " + cherryBombsCount);
+        System.out.println("Datura Bombs: " + daturaBombsCount);
+        System.out.println("Smoke Decoy Bombs: " + smokeDecoyBombsCount);
+    }
+}
