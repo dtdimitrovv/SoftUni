@@ -1,0 +1,158 @@
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int n = Integer.parseInt(scanner.nextLine());
+        char[][] matrix = readMatrix(scanner, n);
+
+        int[] mousePositions = findMousePosition(matrix);
+        int xPosition = mousePositions[0];
+        int yPosition = mousePositions[1];
+
+        boolean outOfTerritory = false;
+
+        int eatenCheese = 0;
+
+        String command = scanner.nextLine();
+        while (!command.equals("end")) {
+            // Clear the old position
+            matrix[xPosition][yPosition] = '-';
+
+            if (command.equals("up")) {
+                if (xPosition - 1 >= 0) {
+                    xPosition--;
+                } else {
+                    outOfTerritory = true;
+                    break;
+                }
+
+                if (matrix[xPosition][yPosition] == 'B') {
+                    // Make the field empty
+                    matrix[xPosition][yPosition] = '-';
+
+                    if (xPosition - 1 >= 0) {
+                        xPosition--;
+                    } else {
+                        outOfTerritory = true;
+                        break;
+                    }
+                }
+
+            } else if (command.equals("down")) {
+                if (xPosition + 1 < matrix.length) {
+                    xPosition++;
+                } else {
+                    outOfTerritory = true;
+                    break;
+                }
+
+                if (matrix[xPosition][yPosition] == 'B') {
+                    // Make the field empty
+                    matrix[xPosition][yPosition] = '-';
+
+                    if (xPosition + 1 < matrix.length) {
+                        xPosition++;
+                    } else {
+                        outOfTerritory = true;
+                        break;
+                    }
+                }
+
+            } else if (command.equals("left")) {
+                if (yPosition - 1 >= 0) {
+                    yPosition--;
+                } else {
+                    outOfTerritory = true;
+                    break;
+                }
+
+                if (matrix[xPosition][yPosition] == 'B') {
+                    // Make the field empty
+                    matrix[xPosition][yPosition] = '-';
+
+                    if (yPosition - 1 >= 0) {
+                        yPosition--;
+                    } else {
+                        outOfTerritory = true;
+                        break;
+                    }
+                }
+
+            } else if (command.equals("right")) {
+                if (yPosition + 1 < matrix[yPosition].length) {
+                    yPosition++;
+                } else {
+                    outOfTerritory = true;
+                    break;
+                }
+
+                if (matrix[xPosition][yPosition] == 'B') {
+                    // Make the field empty
+                    matrix[xPosition][yPosition] = '-';
+
+                    if (yPosition + 1 < matrix[yPosition].length) {
+                        yPosition++;
+                    } else {
+                        outOfTerritory = true;
+                        break;
+                    }
+                }
+            }
+
+            if (matrix[xPosition][yPosition] == 'c') {
+                eatenCheese++;
+            }
+
+            // Mark the current position
+            matrix[xPosition][yPosition] = 'M';
+
+            // Read the next line
+            command = scanner.nextLine();
+        }
+
+        if (outOfTerritory) {
+            System.out.println("Where is the mouse?");
+        }
+
+        if (eatenCheese >= 5) {
+            System.out.printf("Great job, the mouse is fed %d cheeses!\n", eatenCheese);
+        } else {
+            System.out.printf("The mouse couldn't eat the cheeses, she needed %d cheeses more.\n", 5 - eatenCheese);
+        }
+
+        printMatrix(matrix);
+    }
+
+    static int[] findMousePosition(char[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] == 'M') {
+                    int[] result = new int[2];
+                    result[0] = i;
+                    result[1] = j;
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    static char[][] readMatrix(Scanner scanner, int n) {
+        char[][] matrix = new char[n][];
+        for (int i = 0; i < n; i++) {
+            matrix[i] = scanner.nextLine().toCharArray();
+        }
+        return matrix;
+    }
+
+    static void printMatrix(char[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                System.out.print(matrix[i][j]);
+            }
+            System.out.println();
+        }
+    }
+}
