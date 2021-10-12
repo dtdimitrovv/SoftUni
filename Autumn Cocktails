@@ -1,0 +1,76 @@
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int[] ingredientsInput = Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+        int[] freshnessInput = Arrays.stream(scanner.nextLine().split("\\s+")).mapToInt(Integer::parseInt).toArray();
+
+        ArrayDeque<Integer> ingredientsQueue = new ArrayDeque<>();
+        ArrayDeque<Integer> freshnessStack = new ArrayDeque<>();
+
+        // Fill in the queue
+        for (int ingredient : ingredientsInput) {
+            ingredientsQueue.offer(ingredient);
+        }
+
+        // Fill in the stack
+        for (int freshness : freshnessInput) {
+            freshnessStack.push(freshness);
+        }
+
+        TreeMap<String, Integer> cocktails = new TreeMap<>();
+        cocktails.put("Pear Sour", 0);
+        cocktails.put("The Harvest", 0);
+        cocktails.put("Apple Hinny", 0);
+        cocktails.put("High Fashion", 0);
+
+        while (!ingredientsQueue.isEmpty() && !freshnessStack.isEmpty()) {
+            if (ingredientsQueue.peek() == 0) {
+                ingredientsQueue.poll();
+                if (ingredientsQueue.isEmpty()) {
+                    break;
+                }
+            }
+
+            int multiplication = ingredientsQueue.peek() * freshnessStack.peek();
+            if (multiplication == 150) {
+                cocktails.put("Pear Sour", cocktails.get("Pear Sour") + 1);
+                ingredientsQueue.poll();
+            } else if (multiplication == 250) {
+                cocktails.put("The Harvest", cocktails.get("The Harvest") + 1);
+                ingredientsQueue.poll();
+            } else if (multiplication == 300) {
+                cocktails.put("Apple Hinny", cocktails.get("Apple Hinny") + 1);
+                ingredientsQueue.poll();
+            } else if (multiplication == 400) {
+                cocktails.put("High Fashion", cocktails.get("High Fashion") + 1);
+                ingredientsQueue.poll();
+            } else {
+                ingredientsQueue.offer(ingredientsQueue.poll() + 5);
+            }
+            freshnessStack.pop();
+        }
+
+        if (cocktails.get("Pear Sour") >= 1 && cocktails.get("The Harvest") >= 1 && cocktails.get("Apple Hinny") >= 1 && cocktails.get("High Fashion") >= 1) {
+            System.out.println("It's party time! The cocktails are ready!");
+        } else {
+            System.out.println("What a pity! You didn't manage to prepare all cocktails.");
+        }
+
+        if (!ingredientsQueue.isEmpty()) {
+            System.out.println("Ingredients left: " + ingredientsQueue.stream().mapToInt(Integer::valueOf).sum());
+        }
+
+        StringBuilder output = new StringBuilder();
+        
+        cocktails.forEach((key, value) -> {
+            if (value > 0) {
+                output.append(String.format(" # %s --> %d\n", key, value));
+            }
+        });
+
+        System.out.println(output.toString().trim());
+    }
+}
