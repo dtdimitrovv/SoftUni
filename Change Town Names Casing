@@ -1,0 +1,63 @@
+package com.company;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    private static Connection connection;
+
+    static {
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/minions_db", "root", "#Mitko123");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        String countryName = scanner.nextLine();
+
+        capitalizeTownsOfACountry(countryName);
+        String towns = getTownsOfACountry(countryName);
+        System.out.println(towns);
+    }
+
+    private static String getTownsOfACountry(String countryName) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("SELECT name FROM towns\n" +
+                "WHERE country = ?");
+        statement.setString(1, countryName);
+
+        ResultSet resultSet = statement.executeQuery();
+
+        if (resultSet.next()) {
+            List<String> result = new ArrayList<>();
+            result.add(resultSet.getString(1));
+            while (resultSet.next()) {
+                result.add(resultSet.getString(1));
+            }
+
+            return String.valueOf(result);
+        } else {
+            return "No town names were affected.";
+        }
+    }
+
+    private static void capitalizeTownsOfACountry(String countryName) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("UPDATE towns\n" +
+                "SET name = UPPER(name)\n" +
+                "WHERE country = ?");
+        statement.setString(1, countryName);
+
+        int changedElements = statement.executeUpdate();
+
+        // If the update was successful
+        if (changedElements >= 1) {
+            System.out.printf("%d towns were affected.\n", changedElements);
+        }
+    }
+}
