@@ -1,0 +1,137 @@
+package com.company;
+
+import java.sql.*;
+import java.util.Scanner;
+
+public class Main {
+
+    private static Connection connection;
+
+    static {
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/minions_db", "root", "#Mitko123");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        String minionInput = scanner.nextLine();
+        String villainInput = scanner.nextLine();
+
+        String[] minionsTokens = minionInput.split("\\s+");
+        String minionName = minionsTokens[1];
+        int minionAge = Integer.parseInt(minionsTokens[2]);
+        String minionTown = minionsTokens[3];
+
+        String[] villainsTokens = villainInput.split("\\s+");
+        String villainName = villainsTokens[1];
+
+        ResultSet town = findTownByName(minionTown);
+        if (!town.next()) {
+            // Add the town to the database
+            addTownToDB(minionTown);
+        }
+
+        ResultSet villain = findVillainByName(villainName);
+        if (!villain.next()) {
+            // Add the villain to the database
+            addVillainToDB(villainName);
+        }
+
+        ResultSet minion = findMinionByNameAndAgeAndTown(minionName, minionAge, minionTown);
+        if (!minion.next()) {
+            // Add the minion to the database
+            addMinionToDB(minionName, minionAge, minionTown);
+        }
+
+        // Set the new minion to be servant of the villain
+        connectMinionAndVillain(minionName, minionAge, minionTown, villainName);
+    }
+
+    private static void connectMinionAndVillain(String minionName, int minionAge, String minionTown, String villainName) throws SQLException {
+        ResultSet minion = findMinionByNameAndAgeAndTown(minionName, minionAge, minionTown);
+        ResultSet villain = findVillainByName(villainName);
+
+        minion.next(); // Move the cursor to the first row
+        int minionID = minion.getInt(1);
+
+        villain.next(); // Move the cursor to the first row
+        int villainID = villain.getInt(1);
+
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO minions_villains\n" +
+                "VALUES (?,?)");
+        statement.setInt(1, minionID);
+        statement.setInt(2, villainID);
+
+        if (statement.executeUpdate() >= 1) {
+            System.out.printf("Successfully added %s to be minion of %s.\n", minionName, villainName);
+        }
+    }
+
+    private static void addMinionToDB(String minionName, int minionAge, String minionTown) throws SQLException {
+        ResultSet town = findTownByName(minionTown);
+        town.next(); // Move the cursor to the first row
+        int townID = town.getInt(1);
+
+        PreparedStatement addMinion = connection.prepareStatement("INSERT INTO minions (name, age, town_id)\n" +
+                "VALUES (?, ?, ?)");
+        addMinion.setString(1, minionName);
+        addMinion.setInt(2, minionAge);
+        addMinion.setInt(3, townID);
+
+        addMinion.execute();
+    }
+
+    private static ResultSet findMinionByNameAndAgeAndTown(String minionName, int minionAge, String minionTown) throws SQLException {
+        ResultSet town = findTownByName(minionTown);
+        town.next(); // Move the cursor to the first row
+
+        int townID = town.getInt(1);
+
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM minions\n" +
+                "WHERE minions.name = ? AND minions.age = ? AND minions.town_id = ?");
+        statement.setString(1, minionName);
+        statement.setInt(2, minionAge);
+        statement.setInt(3, townID);
+
+        return statement.executeQuery();
+    }
+
+    private static void addTownToDB(String minionTown) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO towns(name)\n" +
+                "VALUES (?)");
+        statement.setString(1, minionTown);
+
+        if (statement.executeUpdate() >= 1) {
+            System.out.printf("Town %s was added to the database.\n", minionTown);
+        }
+    }
+
+    private static ResultSet findTownByName(String minionTown) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM towns\n" +
+                "WHERE towns.name = ?;");
+        statement.setString(1, minionTown);
+
+        return statement.executeQuery();
+    }
+
+    private static ResultSet findVillainByName(String villainName) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM villains\n" +
+                "WHERE villains.name = ?;");
+        statement.setString(1, villainName);
+
+        return statement.executeQuery();
+    }
+
+    private static void addVillainToDB(String villainName) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO villains (name, evilness_factor)\n" +
+                "VALUES(?, 'evil')");
+        statement.setString(1, villainName);
+
+        if (statement.executeUpdate() >= 1) {
+            System.out.printf("Villain %s was added to the database.\n", villainName);
+        }
+    }
+}
