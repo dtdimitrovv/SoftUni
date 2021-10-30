@@ -1,0 +1,25 @@
+package com.company;
+
+import java.sql.*;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/minions_db", "root", "#Mitko123");
+
+        Statement statement = connection.createStatement();
+
+        ResultSet resultSet = statement.executeQuery("SELECT villains.name, COUNT(minion_id) AS 'count_of_minions'FROM villains\n" +
+                "JOIN minions_villains ON villains.id = minions_villains.villain_id\n" +
+                "GROUP BY villains.id\n" +
+                "HAVING count_of_minions > 15\n" +
+                "ORDER BY count_of_minions DESC");
+
+        while (resultSet.next()) {
+            System.out.println(resultSet.getString(1) + " " + resultSet.getInt(2));
+        }
+    }
+}
