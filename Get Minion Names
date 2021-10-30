@@ -1,0 +1,36 @@
+package com.company;
+
+import java.sql.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        String villainID = scanner.nextLine();
+
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/minions_db", "root", "#Mitko123");
+
+        PreparedStatement statement = connection.prepareStatement("SELECT villains.name, CONCAT(m.name, ' ', m.age)\n" +
+                "FROM villains\n" +
+                "         JOIN minions_villains mv on villains.id = mv.villain_id\n" +
+                "         JOIN minions m on mv.minion_id = m.id\n" +
+                "WHERE villain_id = ?\n" +
+                "GROUP BY m.id");
+        statement.setString(1, villainID);
+
+        ResultSet resultSet = statement.executeQuery();
+
+        if (!resultSet.next()) {
+            System.out.printf("No villain with ID %s exists in the database.", villainID);
+        } else {
+            System.out.println("Villain: " + resultSet.getString(1));
+            System.out.println(resultSet.getString(2));
+            while(resultSet.next()){
+                System.out.println(resultSet.getString(2));
+            }
+        }
+    }
+}
