@@ -1,0 +1,53 @@
+package com.company;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+
+    private static Connection connection;
+
+    static {
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/minions_db", "root", "#Mitko123");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+
+        List<String> minionNames = getMinionNames();
+        printMinions(minionNames);
+    }
+
+    private static List<String> getMinionNames() throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("SELECT name\n" +
+                "FROM minions;");
+        ResultSet resultSet = statement.executeQuery();
+
+        List<String> minionNames = new ArrayList<>();
+
+        while (resultSet.next()) {
+            minionNames.add(resultSet.getString(1));
+        }
+
+        return minionNames;
+    }
+
+    private static void printMinions(List<String> minionNames) {
+        for (int i = 0; i < minionNames.size() / 2; i++) {
+            String first = minionNames.get(i);
+            String last = minionNames.get(minionNames.size() - i - 1);
+
+            System.out.println(first);
+            System.out.println(last);
+        }
+        if (minionNames.size() % 2 != 0) {
+            System.out.println(minionNames.get(minionNames.size() / 2));
+        }
+    }
+}
