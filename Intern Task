@@ -1,0 +1,234 @@
+package com.example.springintro;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+// @SpringBootApplication
+public class SpringintroApplication {
+
+    public static void main(String[] args) {
+        // SpringApplication.run(SpringintroApplication.class, args);
+        Scanner scanner = new Scanner(System.in);
+        int rows = Integer.parseInt(scanner.nextLine());
+        int columns = Integer.parseInt(scanner.nextLine());
+
+        // Create empty matrix
+        String[][] originalMatrix = createMatrix(rows, columns);
+
+        // Read the starting coordinates
+        String startingCoordinatesInput = scanner.nextLine();
+
+        // Start reading commands until an empty command is given
+        while (!startingCoordinatesInput.isBlank()) {
+            // Determine where the matrix should be filled from
+            int[] startingCoordinates = getStartingCoordinates(startingCoordinatesInput);
+            int x = startingCoordinates[0];
+            int y = startingCoordinates[1];
+
+            // Read the submatrix
+            String subMatrixInput = scanner.nextLine();
+
+            // Create a submatrix of the given input
+            String[][] subMatrix = getSubMatrix(subMatrixInput);
+
+            int startingRow = originalMatrix.length - 1;
+            int startingColumn = 0;
+
+            // Get the leftmost matrix
+            String[][] leftmostMatrix = getLeftmostMatrix(originalMatrix, subMatrix, startingRow, startingColumn);
+
+            // Check if the submatrix can travel to the leftmost one
+            boolean submatrixFoundItsPosition = submatrixFoundItsLeftmostPosition(leftmostMatrix, subMatrix);
+
+            while (!submatrixFoundItsPosition || leftmostMatrix == null) {
+                // Get the leftmost matrix
+                startingColumn++;
+                if (startingColumn >= columns) {
+                    startingColumn = 0;
+                    startingRow--;
+                }
+                leftmostMatrix = getLeftmostMatrix(originalMatrix, subMatrix, startingRow, startingColumn);
+                if (leftmostMatrix != null) {
+                    submatrixFoundItsPosition = submatrixFoundItsLeftmostPosition(leftmostMatrix, subMatrix);
+                }
+            }
+
+            // Fill in the original matrix with values from the submatrix
+            fillInTheOriginalMatrixWithValuesOfSubmatrix(columns, originalMatrix, subMatrix, startingRow, startingColumn);
+
+            List<Integer> indexesOfRowsToDelete = indexesOfRowsToDelete(originalMatrix);
+            if (indexesOfRowsToDelete.size() > 0) {
+                rows -= indexesOfRowsToDelete.size();
+                originalMatrix = createMatrixWithoutCertainRows(originalMatrix, indexesOfRowsToDelete);
+            }
+
+            printOriginalMatrix(originalMatrix);
+
+            // Read the coordinates again
+            startingCoordinatesInput = scanner.nextLine();
+        }
+
+    }
+
+    private static String[][] createMatrixWithoutCertainRows(String[][] originalMatrix, List<Integer> indexesOfRowsToDelete) {
+        String[][] newMatrix = new String[originalMatrix.length - indexesOfRowsToDelete.size()][];
+        int rowIndexForNewMatrix = 0;
+        for (int i = 0; i < originalMatrix.length; i++) {
+            if (!indexesOfRowsToDelete.contains(i)) {
+                String[] row = new String[originalMatrix[i].length];
+                System.arraycopy(originalMatrix[i], 0, row, 0, originalMatrix[i].length);
+                newMatrix[rowIndexForNewMatrix++] = row;
+            }
+        }
+        return newMatrix;
+    }
+
+    private static List<Integer> indexesOfRowsToDelete(String[][] matrix) {
+        List<Integer> rowsToIgnore = new ArrayList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            if (rowContainsSameCharacters(matrix[i])) {
+                // Store the number of the row so that we don't include it in the new matrix
+                rowsToIgnore.add(i);
+            }
+        }
+        return rowsToIgnore;
+    }
+
+    private static boolean rowContainsSameCharacters(String[] row) {
+        // Assume the row consists of only empty strings
+        boolean rowHasOnlyBlankCharacters = true;
+        for (int i = 0; i < row.length - 1; i++) {
+            if (!row[i].isBlank()) {
+                // An element is not an empty string so our assumption is wrong
+                rowHasOnlyBlankCharacters = false;
+
+                // Start one element after the i-th and check all other elements in the row
+                for (int j = i + 1; j < row.length; j++) {
+                    if (!row[i].equals(row[j])) {
+                        return false;
+                    }
+                }
+            }
+        }
+        // If we have only empty string we don't need to remove the row
+        if (rowHasOnlyBlankCharacters) {
+            return false;
+        }
+        return true;
+    }
+
+    private static void fillInTheOriginalMatrixWithValuesOfSubmatrix(int columns, String[][] originalMatrix, String[][] subMatrix, int startingRow, int startingColumn) {
+        for (int i = subMatrix.length - 1; i >= 0; i--) {
+            for (int j = 0; j < subMatrix[i].length; j++) {
+                // Only if the element at the given position is not an empty string will we change the element is the original matrix as otherwise we will end up with one empty string
+                if (!subMatrix[i][j].equals("")) {
+                    originalMatrix[startingRow][startingColumn] = subMatrix[i][j];
+                }
+                startingColumn++;
+                if (startingColumn >= columns) {
+                    startingColumn = columns;
+                }
+            }
+            startingColumn -= subMatrix[i].length;
+            startingRow--;
+        }
+    }
+
+    private static void printOriginalMatrix(String[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j].equals("")) {
+                    System.out.print("e");
+                } else {
+                    System.out.print(matrix[i][j]);
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    private static String[][] createMatrix(int rows, int columns) {
+        String[][] matrix = new String[rows][columns];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                matrix[i][j] = "";
+            }
+        }
+        return matrix;
+    }
+
+    private static int[] getStartingCoordinates(String startingCoordinatesInput) {
+        startingCoordinatesInput = startingCoordinatesInput.replaceAll("\\[", "");
+        startingCoordinatesInput = startingCoordinatesInput.replaceAll("]", "");
+        startingCoordinatesInput = startingCoordinatesInput.replaceAll("\"", "");
+        return Arrays.stream(startingCoordinatesInput.split(",\\s+")).mapToInt(Integer::parseInt).toArray();
+    }
+
+    private static String[][] getSubMatrix(String subMatrixInput) {
+        // Split the input
+        String[] splitInput = subMatrixInput.split("],\\s+");
+
+        // Create subMatrix
+        String[][] subMatrix = new String[splitInput.length][];
+
+        // Modify each row by removing unnecessary characters
+        for (int i = 0; i < splitInput.length; i++) {
+            String currentRow = splitInput[i];
+            currentRow = currentRow.replaceAll("\\[", "");
+            currentRow = currentRow.replaceAll("]", "");
+            currentRow = currentRow.replaceAll("\"", "");
+
+            // Split the row so that we get the elements of the new submatrix
+            String[] splitRow = currentRow.split(",\\s+");
+            subMatrix[i] = splitRow;
+        }
+
+        return subMatrix;
+    }
+
+    private static String[][] getLeftmostMatrix(String[][] originalMatrix, String[][] subMatrix, int startingRowPosition, int startingColumnPosition) {
+        String[][] leftmostMatrix = new String[subMatrix.length][];
+
+        int leftmostMatrixRowCounter = subMatrix.length - 1;
+        int originalMatrixRows = startingRowPosition;
+
+        // Start from the last row of the submatrix
+        for (int i = subMatrix.length - 1; i >= 0; i--) {
+
+            // Create a row with the length of the current submatrix row
+            String[] row = new String[subMatrix[i].length];
+            for (int j = 0; j < subMatrix[i].length; j++) {
+                if (j + startingColumnPosition >= originalMatrix[originalMatrixRows].length) {
+                    return null;
+                }
+                row[j] = originalMatrix[originalMatrixRows][j + startingColumnPosition];
+            }
+            // Go one row above on the original matrix
+            originalMatrixRows--;
+
+            // Fill in the leftmost matrix
+            leftmostMatrix[leftmostMatrixRowCounter] = row;
+
+            // Decrease the counter so that the next time we fill the row above
+            leftmostMatrixRowCounter--;
+        }
+        return leftmostMatrix;
+    }
+
+    private static boolean submatrixFoundItsLeftmostPosition(String[][] leftmostMatrix, String[][] subMatrix) {
+        // They will have same dimensions
+        for (int i = 0; i < subMatrix.length; i++) {
+            for (int j = 0; j < subMatrix[i].length; j++) {
+                // If the element at that position in the leftmost matrix is empty we have no problem
+                if (!leftmostMatrix[i][j].equals("") && !subMatrix[i][j].equals("")) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+}
+
